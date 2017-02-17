@@ -1,0 +1,849 @@
+options
+{
+     LOOKAHEAD=2;
+}
+
+PARSER_BEGIN(JavaSwift)
+
+public class JavaSwift
+{
+    public static void main(String args[]) throws ParseException
+    {
+        JavaSwift parser = new JavaSwift(System.in);
+        while (true)
+        {
+            parser.parseOneLine();
+        }
+    }
+}
+
+PARSER_END(JavaSwift)
+
+TOKEN:
+{
+
+    < CHARS_GROUP_1_1: ["A"-"Z"] >
+    | < CHARS_GROUP_1_2: ["a"-"z"] >
+    | < CHARS_GROUP_1_3: "_" >
+    | < CHARS_GROUP_1_4: ("U+00A8") | ("U+00AA") | ("U+00AD") ("U+00AF") | (["U+00B2"-"U+00B5"]) | (["U+00B7"-"U+00BA"]) >
+    | < CHARS_GROUP_1_5: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
+
+    | < ESCAPED_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
+    | < ESCAPED_CHARACTERS: ("\\u") (<OPEN_BRACKET_1>) ("Between one and eight hexadecimal digits") (<CLOSE_BRACKET_1>) >
+
+
+    /* ================================
+                    Digits
+       ================================ */
+    | < DIGITS: ["0"-"9"]>
+
+    | < BINARY_DIGITS_BEGIN: "0b">
+    | < BINARY_DIGITS: ["0"-"1"] >
+
+    | < OCTAL_DIGITS_BEGIN: "0o">
+    | < OCTAL_DIGITS: ["0"-"7"] >
+    | < DECIMAL_DIGITS: (<DIGITS>)>
+
+    | < HEXADECIMAL_DIGITS_BEGIN: "0x">
+    | < HEXADECIMAL_DIGITS: (<DECIMAL_DIGITS>) | (["a"-"f"]) | (["A"-"F"])>
+
+
+    /* ================================
+                    Loops
+       ================================ */
+    | < WHILE: "while" >
+    | < FOR: "for" >
+
+    | < AS: "as" >
+    | < IS: "is" >
+    | < CASE: "case" >
+    | < TRY: "try" | "try?" | "try!" >
+    | < TRUE: "true" >
+    | < FALSE: "false" >
+    | < NIL: "nil" >
+    | < ANY: "any" >
+    | < SELF: "self" >
+    | < INOUT: "inout" >
+    | < THROWS: "throws">
+    | < RETHROWS: "rethrows">
+    | < TYPE: "Type" >
+    | < PROTOCOL: "Protocol">
+    | < CLASS: "class" >
+
+
+
+    /* ================================
+                    Math
+       ================================ */
+    | < PLUS: "+" >
+    | < MINUS: "-" >
+    | < EQUEL: "=" >
+    | < E: ("E") | ("e") >
+    | < P: ("P") | ("p") >
+
+
+    | < ARROW_RIGHT: "->">
+    | < UNDERSCORE: "_">
+
+    | < SLASH: "/" >
+    | < BACK_SLASH: "\\" >
+
+    | < DOLLAR: "$" >
+    | < AMPERSAND: "&" >
+    | < DBL_AMPERSAND: "&&" >
+
+    | < QUESTION_MARK: "?" >
+    | < EXCLAMATION_MARK: "!" >
+
+
+    | < DOT: "." >
+    | < THREE_DOTS: "...">
+    | < COMMA: "," >
+    | < SEMICOLON: ";" >
+    | < COLON: ":" >
+
+    | < OPEN_BRACKET_1: "{" >
+    | < CLOSE_BRACKET_1: "}" >
+    | < OPEN_BRACKET_2: "[" >
+    | < CLOSE_BRACKET_2: "]" >
+    | < OPEN_BRACKET_3: "\"" >
+    | < CLOSE_BRACKET_3: "\"" >
+    | < OPEN_BRACKET_4: "(" >
+    | < CLOSE_BRACKET_4: ")" >
+
+
+    | < EOL: "\n" >
+
+
+    | < ACCESS_LEVEL_MODIFIER: "private" |  "private ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "fileprivate" | "fileprivate ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "internal" | "internal ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "public" | "public ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "open" | "open ( set )" >
+}
+
+
+
+
+
+
+
+
+/* =====================================================================================================================
+                        1. Lexical Structure
+   ================================================================================================================== */
+
+/* ===================================================================
+                        1.1. GRAMMAR OF AN IDENTIFIER
+   =================================================================== */
+
+void Identifier(): {}
+{
+    IdentifierHead() |
+    IdentifierHead() IdentifierCharacter() |
+    ImplicitParameterName()
+}
+
+void IdentifierHead(): {}
+{
+    <CHARS_GROUP_1_1> |
+    <CHARS_GROUP_1_2> |
+    <CHARS_GROUP_1_3> |
+    <CHARS_GROUP_1_4> |
+    <CHARS_GROUP_1_5>
+}
+
+void IdentifierCharacter(): {}
+{
+    <DIGITS> |
+    IdentifierHead()
+}
+
+void IdentifierCharacters(): {}
+{
+    IdentifierCharacter() |
+    IdentifierCharacter() IdentifierCharacters()
+}
+
+void ImplicitParameterName(): {}
+{
+    <DOLLAR> <DECIMAL_DIGITS>
+}
+
+/* ===================================================================
+                        1.2. GRAMMAR OF A LITERAL
+   =================================================================== */
+
+void Literal(): {}
+{
+    NumericLiteral() | StringLiteral() | BooleanLiteral() | NilLiteral()
+}
+
+void NumericLiteral(): {}
+{
+    IntegerLiteral() |
+    <MINUS> IntegerLiteral() |
+    FloatingPointLiteral() |
+    <MINUS> FloatingPointLiteral()
+}
+
+void BooleanLiteral(): {}
+{
+    <TRUE> |
+    <FAlSE>
+}
+
+void NilLiteral(): {}
+{
+    <NIL>
+}
+
+/* ===================================================================
+                        1.3. GRAMMAR OF AN INTEGER LITERAL
+   =================================================================== */
+
+void IntegerLiteral(): {}
+{
+    BinaryLiteral() |
+    OctalLiteral() |
+    DecimalLiteral() |
+    HexadecimalLiteral()
+}
+
+void BinaryLiteral(): {}
+{
+    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> |
+    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> BinaryLiteralCharacter()
+}
+
+
+void BinaryLiteralCharacter(): {}
+{
+    <BINARY_DIGITS> |
+    <UNDERSCORE>
+}
+
+void OctalLiteral(): {}
+{
+    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> |
+    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> OctalLiteralCharacters()
+}
+
+void OctalLiteralCharacter(): {}
+{
+    <OCTAL_DIGITS> |
+    <UNDERSCORE>
+}
+
+void OctalLiteralCharacters(): {}
+{
+    OctalLiteralCharacter() |
+    OctalLiteralCharacter() OctalLiteralCharacters()
+}
+
+void DecimalLiteral(): {}
+{
+    <DECIMAL_DIGITS> |
+    <DECIMAL_DIGITS> DecimalLiteralCharacter()
+}
+
+void DecimalDigits(): {}
+{
+    <DECIMAL_DIGITS> |
+    <DECIMAL_DIGITS> DecimalDigits()
+}
+
+void DecimalLiteralCharacter(): {}
+{
+    <DECIMAL_DIGITS> |
+    <UNDERSCORE>
+}
+
+void DecimalLiteralCharacters(): {}
+{
+    DecimalLiteralCharacter() |
+    DecimalLiteralCharacter() DecimalLiteralCharacters()
+}
+
+void HexadecimalLiteral(): {}
+{
+    <HEXADECIMAL_DIGITS_BEGIN> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
+}
+
+void HexadecimalLiteralCharacter(): {}
+{
+    <HEXADECIMAL_DIGITS> |
+    <UNDERSCORE>
+}
+
+void HexadecimalLiteralCharacters(): {}
+{
+    HexadecimalLiteralCharacter() |
+    HexadecimalLiteralCharacter() HexadecimalLiteralCharacters()
+}
+
+/* ===================================================================
+                        1.4. GRAMMAR OF A FLOATING-POINT LITERAL
+   =================================================================== */
+
+void FloatingPointLiteral(): {}
+{
+    DecimalLiteral() |
+    DecimalLiteral() DecimalFraction() |
+    DecimalLiteral() DecimalFraction()
+}
+
+void DecimalFraction(): {}
+{
+    <DOT> DecimalLiteral()
+}
+
+void DecimalExponent(): {}
+{
+    <E> <PLUS> DecimalLiteral() |
+    <E> <MINUS> DecimalLiteral() |
+    <E> DecimalLiteral()
+}
+
+void HexadecimalFraction(): {}
+{
+    <DOT> <HEXADECIMAL_DIGITS> |
+    <DOT> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
+}
+
+void HexadecimalExponent(): {}
+{
+    <P> <PLUS> DecimalLiteral() |
+    <P> <MINUS> DecimalLiteral() |
+    <P> DecimalLiteral()
+}
+
+/* ===================================================================
+                        1.5. GRAMMAR OF A STRING LITERAL
+   =================================================================== */
+
+void StringLiteral(): {}
+{
+    StaticStringLiteral() |
+    InterpolatedStringLiteral()
+}
+
+void StaticStringLiteral(): {}
+{
+    <OPEN_BRACKET_3> QuotedText() <CLOSE_BRACKET_3> |
+    <OPEN_BRACKET_3> <CLOSE_BRACKET_3>
+}
+
+void QuotedText(): {}
+{
+    QuotedTextItem() |
+    QuotedTextItem() QuotedText()
+}
+
+void QuotedTextItem(): {}
+{
+    <ESCAPED_CHARACTERS>
+}
+
+void InterpolatedStringLiteral(): {}
+{
+    <OPEN_BRACKET_3> InterpolatedText() <CLOSE_BRACKET_3> |
+    <OPEN_BRACKET_3> <CLOSE_BRACKET_3>
+}
+
+void InterpolatedText(): {}
+{
+    InterpolatedTextItem() |
+    InterpolatedTextItem() InterpolatedText()
+}
+
+void InterpolatedTextItem(): {}
+{
+    <BACK_SLASH> <OPEN_BRACKET_4> Expression() <CLOSE_BRACKET_4> |
+    QuotedTextItem()
+}
+
+/* ===================================================================
+                        1.6. GRAMMAR OF OPERATORS
+   =================================================================== */
+// TODO: Доделать весь раздел
+
+void Operator(): {}
+{
+    // TODO: Доделать
+    <NIL>
+}
+
+void OperatorHead(): {}
+{
+    // TODO: Доделать
+    <NIL>
+}
+
+void OperatorCharacter(): {}
+{
+    // TODO: Доделать
+    <NIL>
+}
+
+void OperatorCharacters(): {}
+{
+    OperatorCharacter() |
+    OctalLiteralCharacter() OperatorCharacters()
+}
+
+
+/* =====================================================================================================================
+                        2. Lexical Structure
+   ================================================================================================================== */
+
+/* ===================================================================
+                        2.1. GRAMMAR OF A TYPE
+   =================================================================== */
+
+void Type(): {}
+{
+    ArrayType() |
+    DictionaryType() |
+    FunctionType() |
+    TypeIdentifier() |
+    TupleType() |
+    OptionalType() |
+    ImplicitlyUnwrappedOptionalType() |
+    ProtocolCompositionType() |
+    MetatypeType() |
+    <ANY> |
+    <SELF>
+}
+
+/* ===================================================================
+                        2.2. GRAMMAR OF A TYPE ANNOTATION
+   =================================================================== */
+
+void TypeAnnotation(): {}
+{
+    <COLON> Type() |
+    <COLON> Attributes() Type() |
+    <COLON> <INOUT> Type() |
+    <COLON> Attributes() <INOUT> Type()
+}
+
+/* ===================================================================
+                        2.3. GRAMMAR OF A TYPE IDENTIFIER
+   =================================================================== */
+
+void TypeIdentifier(): {}
+{
+    TypeName() |
+    TypeName() GenericArgumentClause() |
+    TypeName() <DOT> TypeIdentifier() |
+    TypeName() GenericArgumentClause() <DOT> TypeIdentifier()
+}
+
+void TypeName(): {
+}
+{
+    Identifier()
+}
+
+/* ===================================================================
+                        2.4. GRAMMAR OF A TUPLE TYPE
+   =================================================================== */
+
+void TupleType(): {}
+{
+    <OPEN_BRACKET_4>  <CLOSE_BRACKET_4>
+}
+
+void TupleTypeElementList(): {}
+{
+    TupleTypeElement() |
+    TupleTypeElement() <COMMA> TupleTypeElementList()
+}
+
+void TupleTypeElement(): {}
+{
+    ElementName() TypeAnnotation()| Type()
+}
+
+void ElementName(): {}
+{
+    Identifier()
+}
+
+/* ===================================================================
+                        2.5. GRAMMAR OF A FUNCTION TYPE
+   =================================================================== */
+
+void FunctionType(): {}
+{
+    Attributes() FunctionTypeArgumentClause() <THROWS> <ARROW_RIGHT> Type() |
+    Attributes() FunctionTypeArgumentClause() <ARROW_RIGHT> Type() |
+    FunctionTypeArgumentClause() <THROWS> <ARROW_RIGHT> Type() |
+    FunctionTypeArgumentClause() <ARROW_RIGHT> Type() |
+    Attributes() FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type() |
+    FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type()
+}
+
+void FunctionTypeArgumentClause(): {}
+{
+    <OPEN_BRACKET_4> <CLOSE_BRACKET_4> |
+    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> |
+    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> <THREE_DOTS>
+}
+
+void FunctionTypeArgumentList(): {}
+{
+    FunctionTypeArgument() |
+    FunctionTypeArgument() <COMMA> FunctionTypeArgumentList()
+}
+
+void uFunctionTypeArgument(): {}
+{
+    Attributes() <INOUT> Type() |
+    Attributes() Type() |
+    Type() |
+    ArgumentLabel() TypeAnnotation()
+}
+
+void ArgumentLabel(): {}
+{
+    Identifier()
+}
+
+/* ===================================================================
+                        2.6. GRAMMAR OF AN ARRAY TYPE
+   =================================================================== */
+
+void ArrayType(): {}
+{
+    <OPEN_BRACKET_2> Type() <CLOSE_BRACKET_2>
+}
+
+/* ===================================================================
+                        2.7. GRAMMAR OF A DICTIONARY TYPE
+   =================================================================== */
+
+void DictionaryType(): {}
+{
+    <OPEN_BRACKET_2> Type() <COLON> Type() <CLOSE_BRACKET_2>
+}
+
+/* ===================================================================
+                        2.8. GRAMMAR OF AN OPTIONAL TYPE
+   =================================================================== */
+
+void OptionalType(): {}
+{
+    Type() <QUESTION_MARK>
+}
+
+/* ===================================================================
+                        2.9. GRAMMAR OF AN IMPLICITLY UNWRAPPED OPTIONAL TYPE
+   =================================================================== */
+
+void ImplicitlyUnwrappedOptionalType(): {}
+{
+    Type() <EXCLAMATION_MARK>
+}
+
+/* ===================================================================
+                        2.10. GRAMMAR OF A PROTOCOL COMPOSITION TYPE
+   =================================================================== */
+
+void ProtocolCompositionType(): {}
+{
+    ProtocolIdentifier() <AMPERSAND> ProtocolCompositionContinuation()
+}
+
+void ProtocolCompositionContinuation(): {}
+{
+    ProtocolIdentifier() ProtocolCompositionType()
+}
+
+void ProtocolIdentifier(): {}
+{
+    TypeIdentifier()
+}
+
+/* ===================================================================
+                        2.11. GRAMMAR OF A METATYPE TYPE
+   =================================================================== */
+
+void MetatypeType(): {}
+{
+    Type() <DOT> <TYPE> |
+    Type() <DOT> <PROTOCOL>
+}
+
+/* ===================================================================
+                        2.12. GRAMMAR OF A TYPE INHERITANCE CLAUSE
+   =================================================================== */
+
+void TypeInheritanceClause(): {}
+{
+    <COLON> <CLASS> <COMMA> TypeInheritanceList() |
+    <COLON> <CLASS> |
+    <COLON> TypeInheritanceList()
+}
+
+void TypeInheritanceList(): {}
+{
+    TypeIdentifier() | TypeIdentifier() <COMMA> TypeInheritanceList()
+}
+
+/* =====================================================================================================================
+                        2. Expressions
+   ================================================================================================================== */
+
+/* ===================================================================
+                        3.1. GRAMMAR OF AN EXPRESSION
+   =================================================================== */
+void Expression(): {}
+{
+    <TRY> PrefixExpression() BinaryExpressions() |
+    PrefixExpression() BinaryExpression() |
+    PrefixExpression() |
+    <TRY> PrefixExpression()
+}
+
+void ExpressionList(): {}
+{
+    Expression() | Expression() <COMMA> ExpressionList()
+}
+
+/* ===================================================================
+                        3.2. GRAMMAR OF A PREFIX EXPRESSION
+   =================================================================== */
+
+void PrefixExpression(): {}
+{
+    PrefixOperator() PostfixExpression() |
+    PostfixExpression() |
+    InOutExpression()
+}
+
+void InOutExpression(): {}
+{
+    <AMPERSAND> Identifier()
+}
+
+/* ===================================================================
+                        3.3. GRAMMAR OF A BINARY EXPRESSION
+   =================================================================== */
+
+void BinaryExpression(): {}
+{
+    BinaryOperator() PrefixExpression() |
+    <EQUEL> <TRY> PrefixExpression() |
+    <EQUEL> PrefixExpression() |
+    ConditionalOperator() <TRY> PrefixExpression() |
+    ConditionalOperator() PrefixExpression() |
+    TypeCastingOperator()
+}
+
+void BinaryExpression(): {}
+{
+    BinaryExpression() |
+    BinaryExpression() BinaryExpressions()
+}
+
+/* ===================================================================
+                        3.4. GRAMMAR OF A CONDITIONAL OPERATOR
+   =================================================================== */
+
+void ConditionalOperator(): {}
+{
+    <QUESTION_MARK> <TRY> Expression() <COLON> |
+    <QUESTION_MARK> Expression() <COLON>
+}
+
+/* ===================================================================
+                        3.5. GRAMMAR OF A TYPE-CASTING OPERATOR
+   =================================================================== */
+
+void TypeCastingOperator(): {}
+{
+    <IS> Type() |
+    <AS> Type() |
+    <AS> <QUESTION_MARK> Type() |
+    <AS> <EXCLAMATION_MARK> Type()
+}
+
+/* ===================================================================
+                        3.6. GRAMMAR OF A PRIMARY EXPRESSION
+   =================================================================== */
+
+void PrimaryExpression(): {}
+{
+    Identifier() GenericArgumentClause() |
+    Identifier()
+    | LiteralExpression()
+    | SelfExpression()
+    | SuperclassExpression()
+    | ClojureExpression()
+    | ParenthesizedExpression()
+    | TupleExpression()
+    | ImplicitMemberExpression()
+    | WildcardExpression()
+    | SelectorExpression()
+    | KeyPathExpression()
+}
+
+/* ===================================================================
+                        3.7. GRAMMAR OF A LITERAL EXPRESSION
+   =================================================================== */
+
+void LiteralExpression(): {}
+{
+    // TODO: Доделать
+    Literal() |
+    ArrayLiteral() |
+    DictionaryLiteral() |
+    PlaygroundLiteral()
+}
+
+
+
+
+
+
+
+void PostfixExpression(): {}
+{
+    PrimaryExpression()
+    | PostfixExpression() PostfixOperator()
+}
+
+
+
+void PrefixOperator(): {}
+{
+
+}
+
+void PostfixOperator(): {}
+{
+}
+
+
+void Statement(): {}
+{
+
+}
+
+void Pattern(): {}
+{
+}
+
+
+
+void FunctionType(): {}
+{
+
+}
+
+void TypeIdentifier(){}
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void WhileStatement(): {
+}
+{
+    <WHILE> ConditionList() CodeBlock()
+}
+
+void Condition(): {
+}
+{
+     Expression() <TRY_OPERATOR> PrefixExpression() BinaryExpression()
+}
+
+void ConditionList(): {
+}
+{
+    Condition() | Condition() <COMMA> ConditionList()
+}
+
+
+void CaseCondition(): {}
+{
+    <CASE> Pattern() Initializer()
+}
+
+void Initializer(): {}
+{
+    Expression()
+}
+
+void CodeBlock(): {}
+{
+    <OPEN_PAR> Statement() <CLOSE_PAR> <SEMICOLON>
+}
+
+void Expression(): {}
+{
+    <TRY> PrefixExpression() BinaryExpression()
+}
+
+void ExpressionList(): {}
+{
+    Expression() | Expression() <COMMA> ExpressionList()
+}
+
+void BinaryExpression(): {}
+{
+    Expression()
+}
+
+void PrefixExpression(): {}
+{
+    PrefixOperator() PostfixExpression()
+}
+
+void PostfixExpression(): {}
+{
+    PrimaryExpression()
+    | PostfixExpression() PostfixOperator()
+}
+
+
+void PrefixOperator(): {}
+{
+
+}
+
+void PostfixOperator(): {}
+{
+}
+
+
+void Statement(): {}
+{
+
+}
+
+void Pattern(): {}
+{
+}

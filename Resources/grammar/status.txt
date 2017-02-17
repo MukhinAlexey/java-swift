@@ -1,0 +1,16 @@
+==== Сделано (DONE):
+
+1. GRAMMAR OF A LITERAL
+2.
+
+
+
+==== Нужно сделать (NEED TO BE DONE):
+
+
+
+
+==== Непонятно как делать (ZHEST):
+
+1. GRAMMAR OF AN IDENTIFIER
+2. GRAMMAR OF AN INTEGER LITERAL
