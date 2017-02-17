@@ -1,0 +1,336 @@
+options
+{
+     LOOKAHEAD=2;
+}
+
+PARSER_BEGIN(JavaSwift)
+
+public class JavaSwift
+{
+    public static void main(String args[]) throws ParseException
+    {
+        JavaSwift parser = new JavaSwift(System.in);
+        while (true)
+        {
+            parser.parseOneLine();
+        }
+    }
+}
+
+PARSER_END(JavaSwift)
+
+TOKEN:
+{
+    < CHARS_GROUP_1_1: ["A"-"Z"] >
+    | < CHARS_GROUP_1_2: ["a"-"z"] >
+    | < CHARS_GROUP_1_3: "_" >
+    | < CHARS_GROUP_1_4: ("U+00A8") | ("U+00AA") | ("U+00AD") ("U+00AF") | (["U+00B2"-"U+00B5"]) | (["U+00B7"-"U+00BA"]) >
+    | < CHARS_GROUP_1_5: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
+
+    | < CHARS_GROUP_2_1: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
+    | < CHARS_GROUP_2_2: ("\\u") (<OPEN_1>) ("Between one and eight hexadecimal digits") (<CLOSE_1>) >
+
+    | < DECIMAL_DIGITS: ["1"-"10"]>
+    | < BINARY_DIGITS: ("0") | ("1") >
+
+    /**
+        Loop
+    */
+    | < WHILE: "while" >
+    | < FOR: "for" >
+
+    | < AS: "as" >
+    | < CASE: "case" >
+    | < TRY: "try" | "try?" | "try!" >
+    | < TRUE: "true" >
+    | < FALSE: "false" >
+    | < NIL: "nil" >
+
+    | < PLUS: "+" >
+    | < MINUS: "-" >
+    | < EQUEL: "=" >
+    | < UNDERSCORE: "_">
+
+    | < SLASH: "/" >
+    | < BACK_SLASH: "\\" >
+
+    | < DOLLAR: "$" >
+    | < AMPERSAND: "&" >
+    | < DBL_AMPERSAND: "&&" >
+
+    | < QUESTION: "?" >
+
+
+
+    | < DOT: "." >
+    | < COMMA: "," >
+    | < SEMICOLON: ";" >
+
+    | < OPEN_1: "{" >
+    | < CLOSE_1: "}" >
+    | < OPEN_2: "[" >
+    | < CLOSE_2: "]" >
+    | < OPEN_3: "\"" >
+    | < CLOSE_3: "\"" >
+    | < OPEN_4: "(" >
+    | < CLOSE_4: ")" >
+
+
+    | < EOL: "\n" >
+
+
+    | < ACCESS_LEVEL_MODIFIER: "private" |  "private ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "fileprivate" | "fileprivate ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "internal" | "internal ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "public" | "public ( set )" >
+    | < ACCESS_LEVEL_MODIFIER: "open" | "open ( set )" >
+}
+
+// Done
+void Identifier(): {}
+{
+    IdentifierHead() |
+    ImplicitParameterName()
+}
+
+void ImplicitParameterName(): {}
+{
+    <DOLLAR>
+}
+
+// Done
+void IdentifierHead(): {}
+{
+    <CHARS_GROUP_1_1> |
+    <CHARS_GROUP_1_2> |
+    <CHARS_GROUP_1_3> |
+    <CHARS_GROUP_1_4> |
+    <CHARS_GROUP_1_5>
+}
+
+// Done
+void Literal(): {}
+{
+    NumericLiteral() | StringLiteral() | BooleanLiteral() | NilLiteral()
+}
+
+// Done
+void NumericLiteral(): {}
+{
+    IntegerLiteral() |
+    <MINUS> IntegerLiteral() |
+    FloatingPointLiteral() |
+    <MINUS> FloatingPointLiteral()
+}
+
+// Done
+void StringLiteral(): {}
+{
+    StaticStringLiteral() |
+    InterpolatedStringLiteral()
+}
+
+// Done
+void StaticStringLiteral(): {}
+{
+    <OPEN_3> QuotedText() <CLOSE_3> |
+    <OPEN_3> <CLOSE_3>
+}
+
+// Done
+void QuotedText(): {}
+{
+    QuotedTextItem() |
+    QuotedTextItem() QuotedText()
+}
+
+// Done
+void QuotedTextItem(): {}
+{
+    EscapedCharacter()
+}
+
+// Done
+void EscapedCharacter(): {}
+{
+    <CHARS_GROUP_2_1> |
+    <CHARS_GROUP_2_2>
+}
+
+// Done
+void InterpolatedStringLiteral(): {}
+{
+    <OPEN_3> InterpolatedText() <CLOSE_3> |
+    <OPEN_3> <CLOSE_3>
+}
+
+// Done
+void InterpolatedText(): {}
+{
+    InterpolatedTextItem() |
+    InterpolatedTextItem() InterpolatedText()
+}
+
+// Done
+void InterpolatedTextItem(): {}
+{
+    <BACK_SLASH> <OPEN_4> Expression() <CLOSE_4> |
+    QuotedTextItem()
+}
+
+void BooleanLiteral(): {}
+{
+    <TRUE> |
+    <FAlSE>
+}
+
+void NilLiteral(): {}
+{
+    <NIL>
+}
+
+
+/** =========================================
+         GRAMMAR OF AN INTEGER LITERAL
+    ========================================= */
+void IntegerLiteral(): {}
+{
+    BinaryLiteral() |
+    OctalLiteral() |
+    DecimalLiteral() |
+    HexadecimalLiteral()
+}
+
+void BinaryLiteral(): {}
+{
+    <BINARY_DIGITS> |
+    <UNDERSCORE>
+}
+
+
+void BinaryLiteralCharacter(): {}
+{
+    <BINARY_DIGITS> |
+    <UNDERSCORE>
+}
+
+void DecimalDigits(): {}
+{
+    <DECIMAL_DIGITS> |
+    <DECIMAL_DIGITS> DecimalDigits()
+}
+
+void DecimalLiteral(): {}
+{
+    <DECIMAL_DIGITS> |
+    <DECIMAL_DIGITS> DecimalLiteralCharacter()
+}
+
+void DecimalLiteralCharacter(): {}
+{
+    <DECIMAL_DIGITS> |
+    <UNDERSCORE>
+}
+
+void FloatingPointLiteral(): {}
+{
+
+}
+
+void WhileStatement(): {
+}
+{
+    <WHILE> ConditionList() CodeBlock()
+}
+
+void Condition(): {
+}
+{
+     Expression() <TRY_OPERATOR> PrefixExpression() BinaryExpression()
+}
+
+void ConditionList(): {
+}
+{
+    Condition() | Condition() <COMMA> ConditionList()
+}
+
+
+void CaseCondition(): {}
+{
+    <CASE> Pattern() Initializer()
+}
+
+void Initializer(): {}
+{
+    Expression()
+}
+
+void CodeBlock(): {}
+{
+    <OPEN_PAR> Statement() <CLOSE_PAR> <SEMICOLON>
+}
+
+void Expression(): {}
+{
+    <TRY> PrefixExpression() BinaryExpression()
+}
+
+void ExpressionList(): {}
+{
+    Expression() | Expression() <COMMA> ExpressionList()
+}
+
+void BinaryExpression(): {}
+{
+    Expression()
+}
+
+void PrefixExpression(): {}
+{
+    PrefixOperator() PostfixExpression()
+}
+
+void PostfixExpression(): {}
+{
+    PrimaryExpression()
+    | PostfixExpression() PostfixOperator()
+}
+
+void PrimaryExpression(): {}
+{
+    Identifier()
+    | LiteralExpression()
+    | SelfExpression()
+    | SuperclassExpression()
+    | ClojureExpression()
+    | ParenthesizedExpression()
+    | TupleExpression()
+    | ImplicitMemberExpression()
+    | WildcardExpression()
+    | SelectorExpression()
+    | KeyPathExpression()
+}
+
+void PrefixOperator(): {}
+{
+
+}
+
+void PostfixOperator(): {}
+{
+}
+
+void Operator(): {}
+{
+
+}
+
+void Statement(): {}
+{
+
+}
+
+void Pattern(): {}
+{
+}
