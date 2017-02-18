@@ -2262,7 +2262,43 @@ void ClassMember(): {}
 /* ===================================================================
                         5.12. GRAMMAR OF A PROTOCOL DECLARATION
    =================================================================== */
+void ProtocolDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? <PROTOCOL> ProtocolName() (TypeInheritanceClause())? ProtocolBody()
+}
 
+void ProtocolName(): {}
+{
+    Identifier()
+}
+
+void ProtocolBody(): {}
+{
+    <OPEN_BRACKET> (ProtocolMembers())? <CLOSED_BRACKET>
+}
+
+
+void ProtocolMembers(): {}
+{
+    ProtocolMember() (ProtocolMembers())?
+}
+
+void ProtocolMember(): {}
+{
+    ProtocolMemberDeclaration()
+    | CompilerControlStatement()
+}
+
+
+void ProtocolMemberDeclaration(): {}
+{
+    ProtocolPropertyDeclaration()
+    | ProtocolMethodDeclaration()
+    | ProtocolInitializerDeclaration()
+    | ProtocolSubscriptDeclaration()
+    | ProtocolAssociatedTypeDeclaration()
+    | TypealiasDeclaration()
+}
 
 
 /* ===================================================================
