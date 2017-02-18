@@ -2099,7 +2099,101 @@ void DefaultArgumentClause(): {}
 /* ===================================================================
                         5.9. GRAMMAR OF AN ENUMERATION DECLARATION
    =================================================================== */
+void EnumDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? UnionStyleEnum()
+    | (Attributes())? (AccessLevelModifier())? RawValueStyleEnum()
+}
 
+
+void UnionStyleEnum(): {}
+{
+    (<INDIRECT>)? <ENUM> EnumName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? <OPEN_BRACKET> (UnionStyleEnumMembers())? <CLOSED_BRACKET>
+}
+
+void UnionStyleEnumMembers(): {}
+{
+    UnionStyleEnumMember() (UnionStyleEnumMembers())?
+}
+
+void UnionStyleEnumMember(): {}
+{
+    Declaration()
+    | UnionStyleEnumCaseClause()
+    | CompilerControlStatement()
+}
+
+void UnionStyleEnumCaseClause(): {}
+{
+    (Attributes())? (<INDIRECT>)? <CASE> UnionStyleEnumCaseList()
+}
+
+void UnionStyleEnumCaseList(): {}
+{
+    UnionStyleEnumCase()
+    | UnionStyleEnumCase() <COMMA> UnionStyleEnumCaseList()
+}
+
+void UnionStyleEnumCase(): {}
+{
+    EnumCaseName() (TupleType())?
+}
+
+void EnumName(): {}
+{
+    Identifier()
+}
+
+void EnumCaseName(): {}
+{
+    Identifier()
+}
+
+
+void RawValueStyleEnum(): {}
+{
+    <ENUM> EnumName() (GenericParameterClause())? TypeInheritanceClause() (GenericWhereClause())? <OPEN_BRACKET> RawValueStyleEnumMembers() <CLOSED_BRACKET>
+}
+
+void RawValueStyleEnumMembers(): {}
+{
+    RawValueStyleEnumMember() (RawValueStyleEnumMembers())?
+}
+
+void RawValueStyleEnumMember(): {}
+{
+    Declaration()
+    | RawValueStyleEnumCaseClause()
+    | CompilerControlStatement()
+}
+
+void RawValueStyleEnumCaseClause(): {}
+{
+    (Attributes())? <CASE> RawValueStyleEnumCaseList()
+}
+
+void RawValueStyleEnumCaseList(): {}
+{
+    RawValueStyleEnumCase()
+    | RawValueStyleEnumCase() <COMMA> RawValueStyleEnumCaseList()
+}
+
+void RawValueStyleEnumCase(): {}
+{
+    EnumCaseName() (RawValueAssignment())?
+}
+
+void RawValueAssignment(): {}
+{
+    <ASSIGN> RawValueLiteral()
+}
+
+void RawValueLiteral(): {}
+{
+    NumericLiteral()
+    | StaticStringLiteral()
+    | BooleanLiteral()
+}
 
 
 /* ===================================================================
