@@ -2332,7 +2332,10 @@ void ProtocolInitializerDeclaration(): {}
 /* ===================================================================
                         5.16. GRAMMAR OF A PROTOCOL SUBSCRIPT DECLARATION
    =================================================================== */
-
+void ProtocolSubscriptDeclaration(): {}
+{
+    SubscriptHead() SubscriptResult() GetterSetterKeywordBlock()
+}
 
 
 /* ===================================================================
