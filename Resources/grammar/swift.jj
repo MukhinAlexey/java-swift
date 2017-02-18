@@ -2381,6 +2381,28 @@ void DeinitializerDeclaration(): {}
 /* ===================================================================
                         5.20. GRAMMAR OF AN EXTENSION DECLARATION
    =================================================================== */
+void ExtensionDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? <EXTENSION> TypeIdentifier() (TypeInheritanceClause())? ExtensionBody()
+    | (Attributes())? (AccessLevelModifier())? <EXTENSION> TypeIdentifier() GenericWhereClause() ExtensionBody()
+}
+
+void ExtensionBody(): {}
+{
+    <OPEN_BRACKET> (ExtensionMembers())? <CLOSED_BRACKET>
+}
+
+
+void ExtensionMembers(): {}
+{
+    ExtensionMember() (ExtensionMembers())?
+}
+
+void ExtensionMember(): {}
+{
+    Declaration()
+    | CompilerControlStatement()
+}
 
 
 
