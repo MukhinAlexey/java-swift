@@ -258,7 +258,7 @@ TOKEN:
     /* ================================
                     Throw
        ================================ */
-    | < Throw: "throw" >
+    | < THROW: "throw" >
     
     
     /* ================================
@@ -1374,133 +1374,440 @@ void OptionalChainingExpression(): {}
 /* ===================================================================
                         4.1. GRAMMAR OF A STATEMENT
    =================================================================== */
+void Statement(): {}
+{
+    Expression() (<SEMICOLON>)?
+    | Declaration() (<SEMICOLON>)?
+    | LoopStatement() (<SEMICOLON>)?
+    | BranchStatement() (<SEMICOLON>)?
+    | LabeledStatement() (<SEMICOLON>)?
+    | ControlTransferStatement() (<SEMICOLON>)?
+    | DeferStatement() (<SEMICOLON>)?
+    | DoStatement() (<SEMICOLON>)?
+    | CompilerControlStatement() (<SEMICOLON>)?
+}
 
+void Statements(): {}
+{
+    Statement() (Statements())?
+}
 
 
 /* ===================================================================
                         4.2. GRAMMAR OF A LOOP STATEMENT
    =================================================================== */
-
+void LoopStatement(): {}
+{
+    ForInStatement()
+    | WhileStatement()
+    | RepeatWhileStatement()
+}
 
 
 /* ===================================================================
                         4.3. GRAMMAR OF A FOR-IN STATEMENT
    =================================================================== */
-
+void ForInStatement(): {}
+{
+    <FOR> (<CASE>)? Pattern() <IN> Expression() (WhereClause())? CodeBlock()
+}
 
 
 /* ===================================================================
                         4.4. GRAMMAR OF A WHILE STATEMENT
    =================================================================== */
+void WhileStatement(): {}
+{
+    <WHILE> ConditionList() CodeBlock()
+}
 
+void ConditionList(): {}
+{
+    Condition()
+    | Condition() <COMMA> ConditionList()
+}
+
+void Condition(): {}
+{
+    Expression()
+    | AvailabilityCondition()
+    | CaseCondition()
+    | OptionalBridgingCondition()
+}
+
+void CaseCondition(): {}
+{
+    <CASE> Pattern() Initializer()
+}
+
+void OptionalBridgingCondition(): {}
+{
+    <LET> Pattern() Initializer()
+    | <VAR> Pattern() Initializer()
+}
 
 
 /* ===================================================================
                         4.5. GRAMMAR OF A REPEAT-WHILE STATEMENT
    =================================================================== */
-
+void RepeatWhileStatement(): {}
+{
+    <REPEAT> CodeBlock() <WHILE> Expression()
+}
 
 
 /* ===================================================================
                         4.6. GRAMMAR OF A BRANCH STATEMENT
    =================================================================== */
-
+void BranchStatement(): {}
+{
+    IfStatement()
+    | GuardStatement()
+    | SwitchStatement()
+}
 
 
 /* ===================================================================
                         4.7. GRAMMAR OF AN IF STATEMENT
    =================================================================== */
+void IfStatement(): {}
+{
+    <IF> ConditionList() CodeBlock() (ElseClause())?
+}
 
+void ElseClause(): {}
+{
+    <ELSE> CodeBlock()
+    | <ELSE> IfStatement()
+}
 
 
 /* ===================================================================
                         4.8. GRAMMAR OF A GUARD STATEMENT
    =================================================================== */
-
+void GuardStatement(): {}
+{
+    <GUARD> ConditionList() <ELSE> CodeBlock()
+}
 
 
 /* ===================================================================
                         4.9. GRAMMAR OF A SWITCH STATEMENT
    =================================================================== */
+void SwitchStatement(): {}
+{
+    <SWITCH> Expression() <OPEN_BRACKET> (SwitchCases())? <CLOSED_BRACKET>
+}
 
+void SwitchCases(): {}
+{
+    SwitchCase() (SwitchCases())?
+}
+
+void SwitchCase(): {}
+{
+    CaseLabel() Statements()
+    | DefaultLabel() Statements()
+}
+
+void CaseLabel(): {}
+{
+    <CASE> CaseItemList() <COLON>
+}
+
+void CaseItemList(): {}
+{
+    Pattern() (WhereClause())?
+    | Pattern() (WhereClause())? <COMMA> CaseItemList()
+}
+
+void DefaultLabel(): {}
+{
+    <DEFAULT> <COLON>
+}
+
+void WhereClause(): {}
+{
+    <WHERE> WhereExpression()
+}
+
+void WhereExpression(): {}
+{
+    Expression()
+}
 
 
 /* ===================================================================
                         4.10. GRAMMAR OF A LABELED STATEMENT
    =================================================================== */
+void LabeledStatement(): {}
+{
+    StatementLabel() LoopStatement()
+    | StatementLable() IfStatement()
+    | StatementLable() SwitchStatement()
+    | StatementLable() DoStatement()
+}
 
+void StatementLabel(): {}
+{
+    LabelName() <COLON>
+}
+
+void LabelName(): {}
+{
+    Identifier()
+}
 
 
 /* ===================================================================
                         4.11. GRAMMAR OF A CONTROL TRANSFER STATEMENT
    =================================================================== */
-
+void ControlTransferStatement(): {}
+{
+    BreakStatement()
+    | ContinueStatement()
+    | FallthroughStatement()
+    | ReturnStatement()
+    | ThrowStatement()
+}
 
 
 /* ===================================================================
                         4.12. GRAMMAR OF A BREAK STATEMENT
    =================================================================== */
-
+void BreakStatement(): {}
+{
+    <BREAK> (LabelName())?
+}
 
 
 /* ===================================================================
                         4.13. GRAMMAR OF A CONTINUE STATEMENT
    =================================================================== */
-
+void ContinueStatement(): {}
+{
+    <CONTINUE> (LabelName())?
+}
 
 
 /* ===================================================================
                         4.14. GRAMMAR OF A FALLTHROUGH STATEMENT
    =================================================================== */
-
+void FallthroughStatement(): {}
+{
+    <FALLTHROUGH>
+}
 
 
 /* ===================================================================
                         4.15. GRAMMAR OF A RETURN STATEMENT
    =================================================================== */
-
+void ReturnStatement(): {}
+{
+    <RETURN> (Expression())?
+}
 
 
 /* ===================================================================
                         4.16. GRAMMAR OF A THROW STATEMENT
    =================================================================== */
-
+void ThrowStatement(): {}
+{
+    <THROW> Expression()
+}
 
 
 /* ===================================================================
                         4.17. GRAMMAR OF A DEFER STATEMENT
    =================================================================== */
-
+void DeferStatement(): {}
+{
+    <DEFER> CodeBlock()
+}
 
 
 /* ===================================================================
                         4.18. GRAMMAR OF A DO STATEMENT
    =================================================================== */
+void DoStatement(): {}
+{
+    <DO> CodeBlock() (CatchClauses())?
+}
 
+void CatchClauses(): {}
+{
+    CatchClause() (CatchClauses())?
+}
+
+void CatchClause(): {}
+{
+    <CATCH> (Pattern())? (WhereClause())? CodeBlock()
+}
 
 
 /* ===================================================================
                         4.19. GRAMMAR OF A COMPILER CONTROL STATEMENT
    =================================================================== */
-
+void CompilerControlStatement(): {}
+{
+    ConditionalCompilationBlock()
+    | LineControlStatement()
+}
 
 
 /* ===================================================================
                         4.20. GRAMMAR OF A CONDITIONAL COMPILATION BLOCK
    =================================================================== */
+void ConditionalCompilationBlock(): {}
+{
+    IfDirectiveClause() (ElseifDirectiveClauses())? (ElseDirectiveClause())? EndifDirective()
+}
 
+
+void IfDirectiveClause(): {}
+{
+    IfDirective() CompilationCondition() (Statements())?
+}
+
+void ElseifDirectiveClauses(): {}
+{
+    ElseifDirectiveClause() (ElseifDirectiveClauses())?
+}
+
+void ElseifDirectiveClause(): {}
+{
+    ElseifDirective() CompilationCondition() (Statements())?
+}
+
+void ElseDirectiveClause(): {}
+{
+    ElseDirective() (Statements())?
+}
+
+
+void IfDirective(): {}
+{
+    <SHARP_IF>
+}
+
+void ElseifDirective(): {}
+{
+    <SHARP_ELSEIF>
+}
+
+void ElseDirective(): {}
+{
+    <SHARP_ELSE>
+}
+
+void EndifDirective(): {}
+{
+    <SHARP_ENDIF>
+}
+
+
+void CompilationCondition(): {}
+{
+    PlatformCondition()
+    | Identifier()
+    | BooleanLiteral()
+    | <OPEN_PARENTHESIS> CompilationCondition() <CLOSED_PARENTHESIS>
+    | <EXCLAMATION_MARK> CompilationCondition()
+    | CompilationCondition() <DBL_AMPERSAND> CompilationCondition()
+    | CompilationCondition() <DBL_OR> CompilationCondition()
+}
+
+
+void PlatformCondition(): {}
+{
+    <OS> <OPEN_PARENTHESIS> OperatingSystem() <CLOSED_PARENTHESIS>
+    | <ARCH> <OPEN_PARENTHESIS> Architecture() <CLOSED_PARENTHESIS>
+    | <SWIFT> <OPEN_PARENTHESIS> <MORE_OR_EQUALS> SwiftVersion() <CLOSED_PARENTHESIS>
+}
+
+void OperatingSystem(): {}
+{
+    <MAC_OS>
+    | <IOS>
+    | <WATCH_OS>
+    | <TV_OS>
+}
+
+void Architecture(): {}
+{
+    <I_386>
+    | <X_86_64>
+    | <ARM>
+    | <ARM_64>
+}
+
+void SwiftVersion(): {}
+{
+    DecimalDigits() (SwiftVersionConfiguration())?
+}
+
+void SwiftVersionConfiguration(): {}
+{
+    <DOT> DecimalDigits() (SwiftVersionConfiguration())?
+}
 
 
 /* ===================================================================
                         4.21. GRAMMAR OF A LINE CONTROL STATEMENT
    =================================================================== */
+void LineControlStatement(): {}
+{
+    <SOURCE_LOCATION> <OPEN_PARENTHESIS> <FILE> FileName() <COMMA> <LINE> LineNumber() <CLOSED_PARENTHESIS> //TODO decide on colon "file:"
+    | <SOURCE_LOCATION> <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
+}
 
+void LineNumber(): {}
+{
+    DecimalDigits()
+}
+
+void FileName(): {}
+{
+    StaticStringLiteral()
+}
 
 
 /* ===================================================================
                         4.22. GRAMMAR OF AN AVAILABILITY CONDITION
    =================================================================== */
+void AvailabilityCondition(): {}
+{
+    <SHARP_AVAILABLE> <OPEN_PARENTHESIS> AvailabilityArguments() <CLOSED_PARENTHESIS>
+}
 
+void AvailabilityArguments(): {}
+{
+    AvailabilityArgument()
+    | AvailabilityArgument() <COMMA> AvailabilityArguments()
+}
+
+void AvailabilityArgument(): {}
+{
+    PlatformName() PlatformVersion()
+    | <STAR>
+}
+
+void PlatformName(): {}
+{
+    <IOS>
+    | <IOS_APP_EXT>
+    | <MAC_OS>
+    | <MAC_OS_APP_EXT>
+    | <WATCH_OS>
+    | <TV_OS>
+}
+
+void PlatformVersion(): {}
+{
+    DecimalDigits()
+    | DecimalDigits() <DOT> DecimalDigits()
+    | DecimalDigits() <DOT> DecimalDigits() <DOT> DecimalDigits()
+}
 
 
 
@@ -1852,10 +2159,69 @@ void ExpressionPattern(): {}
 /* ===================================================================
                         8.1. GRAMMAR OF A GENERIC PARAMETER CLAUSE
    =================================================================== */
+void GenericParameterClause(): {}
+{
+    <OPEN_TRIANGULAR_BRACKET> GenericParameterList() <CLOSED_TRIANGULAR_BRACKET>
+}
 
+void GenericParameterList(): {}
+{
+    GenericParameter()
+    | GenericParameter() <COMMA> GenericParameterList()
+}
+
+void GenericParameter(): {}
+{
+    TypeName()
+    | TypeName() <COLON> TypeIdentifier()
+    | TypeName() <COLON> ProtocolCompositionType()
+}
+
+void GenericWhereClause(): {}
+{
+    <WHERE> RequirementList()
+}
+
+void RequirementList(): {}
+{
+    Requirement()
+    | Requirement() <COMMA> RequirementList()
+}
+
+void Requirement(): {}
+{
+    ConformanceRequirement()
+    | SameTypeRequirement()
+}
+
+void ConformanceRequirement(): {}
+{
+    TypeIdentifier() <COLON> TypeIdentifier()
+    | TypeIdentifier() <COLON> ProtocolCompositionType()
+}
+
+void SameTypeRequirement(): {}
+{
+    TypeIdentifier() <EQUALS> Type()
+}
 
 
 /* ===================================================================
                         8.2. GRAMMAR OF A GENERIC ARGUMENT CLAUSE
    =================================================================== */
 
+void GenericArgumentClause(): {}
+{
+    <OPEN_TRIANGULAR_BRACKET> GenericArgumentList() <CLOSED_TRIANGULAR_BRACKET>
+}
+
+void GenericArgumentList(): {}
+{
+    GenericArgument()
+    | GenericArgument() <COMMA> GenericArgumentList()
+}
+
+void GenericArgument(): {}
+{
+    Type()
+}
