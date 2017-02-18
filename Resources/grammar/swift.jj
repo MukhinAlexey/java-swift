@@ -2230,7 +2230,33 @@ void StructMember(): {}
 /* ===================================================================
                         5.11. GRAMMAR OF A CLASS DECLARATION
    =================================================================== */
+void ClassDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? (<FINAL>)? <CLASS> ClassName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? ClassBody()
+    | (Attributes())? <FINAL> (AccessLevelModifier())? <CLASS> ClassName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? ClassBody()
+}
 
+void ClassName(): {}
+{
+    Identifier()
+}
+
+void ClassBody(): {}
+{
+    <OPEN_BRACKET> (ClassMembers())? <CLOSED_BRACKET>
+}
+
+
+void ClassMembers(): {}
+{
+    ClassMember() (ClassMembers())?
+}
+
+void ClassMember(): {}
+{
+    Declaration()
+    | CompilerControlStatement()
+}
 
 
 /* ===================================================================
