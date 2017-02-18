@@ -2313,7 +2313,10 @@ void ProtocolPropertyDeclaration(): {}
 /* ===================================================================
                         5.14. GRAMMAR OF A PROTOCOL METHOD DECLARATION
    =================================================================== */
-
+void ProtocolMethodDeclaration(): {}
+{
+    FunctionHead() FunctionName() (GenericParameterClause())? FunctionSignature() (GenericWhereClause())?
+}
 
 
 /* ===================================================================
