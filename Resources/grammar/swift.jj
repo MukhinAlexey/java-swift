@@ -1163,7 +1163,35 @@ void ForInStatement(): {}
 /* ===================================================================
                         4.4. GRAMMAR OF A WHILE STATEMENT
    =================================================================== */
+void WhileStatement(): {}
+{
+    <WHILE> ConditionList() CodeBlock()
+}
 
+void ConditionList(): {}
+{
+    Condition()
+    | Condition() <COMMA> ConditionList()
+}
+
+void Condition(): {}
+{
+    Expression()
+    | AvailabilityCondition()
+    | CaseCondition()
+    | OptionalBridgingCondition()
+}
+
+void CaseCondition(): {}
+{
+    <CASE> Pattern() Initializer()
+}
+
+void OptionalBridgingCondition(): {}
+{
+    <LET> Pattern() Initializer()
+    | <VAR> Pattern() Initializer()
+}
 
 
 /* ===================================================================
