@@ -1241,7 +1241,47 @@ void GuardStatement(): {}
 /* ===================================================================
                         4.9. GRAMMAR OF A SWITCH STATEMENT
    =================================================================== */
+void SwitchStatement(): {}
+{
+    <SWITCH> Expression() <OPEN_BRACKET> (SwitchCases())? <CLOSED_BRACKET>
+}
 
+void SwitchCases(): {}
+{
+    SwitchCase() (SwitchCases())?
+}
+
+void SwitchCase(): {}
+{
+    CaseLabel() Statements()
+    | DefaultLabel() Statements()
+}
+
+void CaseLabel(): {}
+{
+    <CASE> CaseItemList() <COLON>
+}
+
+void CaseItemList(): {}
+{
+    Pattern() (WhereClause())?
+    | Pattern() (WhereClause())? <COMMA> CaseItemList()
+}
+
+void DefaultLabel(): {}
+{
+    <DEFAULT> <COLON>
+}
+
+void WhereClause(): {}
+{
+    <WHERE> WhereExpression()
+}
+
+void WhereExpression(): {}
+{
+    Expression()
+}
 
 
 /* ===================================================================
