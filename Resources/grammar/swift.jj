@@ -1637,3 +1637,18 @@ void SameTypeRequirement(): {}
                         8.2. GRAMMAR OF A GENERIC ARGUMENT CLAUSE
    =================================================================== */
 
+void GenericArgumentClause(): {}
+{
+    <OPEN_TRIANGULAR_BRACKET> GenericArgumentList() <CLOSED_TRIANGULAR_BRACKET>
+}
+
+void GenericArgumentList(): {}
+{
+    GenericArgument()
+    | GenericArgument() <COMMA> GenericArgumentList()
+}
+
+void GenericArgument(): {}
+{
+    Type()
+}
