@@ -2341,7 +2341,10 @@ void ProtocolSubscriptDeclaration(): {}
 /* ===================================================================
                         5.17. GRAMMAR OF A PROTOCOL ASSOCIATED DECLARATION
    =================================================================== */
-
+void ProtocolAssociatedTypeDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? <ASSOCIATED_TYPE> TypealiasName() (TypeInheritanceClause())? (TypealiasAssignment())?
+}
 
 
 /* ===================================================================
