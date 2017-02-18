@@ -1309,7 +1309,14 @@ void LabelName(): {}
 /* ===================================================================
                         4.11. GRAMMAR OF A CONTROL TRANSFER STATEMENT
    =================================================================== */
-
+void ControlTransferStatement(): {}
+{
+    BreakStatement()
+    | ContinueStatement()
+    | FallthroughStatement()
+    | ReturnStatement()
+    | ThrowStatement()
+}
 
 
 /* ===================================================================
