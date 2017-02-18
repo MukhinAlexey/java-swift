@@ -2463,7 +2463,53 @@ void InfixOperatorGroup(): {}
 /* ===================================================================
                         5.23. GRAMMAR OF A PRECEDENCE GROUP DECLARATION
    =================================================================== */
+void PrecedenceGroupDeclaration(): {}
+{
+    <PRECEDENCE_GROUP> PrecedenceGroupName() <OPEN_BRACKET> (PrecedenceGroupAttributes())? <CLOSED_BRACKET>
+}
 
+
+void PrecedenceGroupAttributes(): {}
+{
+    PrecedenceGroupAttribute() (PrecedenceGroupAttributes())?
+}
+
+void PrecedenceGroupAttribute(): {}
+{
+    PrecedenceGroupRelation()
+    | PrecedenceGroupAssignment()
+    | PrecedenceGroupAssociativity()
+}
+
+void PrecedenceGroupRelation(): {}
+{
+    <HIGHER_THAN> <COLON> PrecedenceGroupNames()
+    | <LOWER_THAN> <COLON> PrecedenceGroupNames()
+}
+
+void PrecedenceGroupAssignment(): {}
+{
+    <ASSIGNMENT> <COLON> BooleanLiteral()
+}
+
+void PrecedenceGroupAssociativity(): {}
+{
+    <ASSOCIATIVITY> <COLON> <LEFT>
+    | <ASSOCIATIVITY> <COLON> <RIGHT>
+    | <ASSOCIATIVITY> <COLON> <NONE>
+}
+
+
+void PrecedenceGroupNames(): {}
+{
+    PrecedenceGroupName()
+    | PrecedenceGroupName() <COMMA> PrecedenceGroupNames()
+}
+
+void PrecedenceGroupName(): {}
+{
+    Identifier()
+}
 
 
 /* ===================================================================
