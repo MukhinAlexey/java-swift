@@ -1287,7 +1287,23 @@ void WhereExpression(): {}
 /* ===================================================================
                         4.10. GRAMMAR OF A LABELED STATEMENT
    =================================================================== */
+void LabeledStatement(): {}
+{
+    StatementLabel() LoopStatement()
+    | StatementLable() IfStatement()
+    | StatementLable() SwitchStatement()
+    | StatementLable() DoStatement()
+}
 
+void StatementLabel(): {}
+{
+    LabelName() <COLON>
+}
+
+void LabelName(): {}
+{
+    Identifier()
+}
 
 
 /* ===================================================================
