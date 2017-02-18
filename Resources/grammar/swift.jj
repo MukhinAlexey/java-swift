@@ -110,6 +110,9 @@ TOKEN:
     | < CLOSE_BRACKET_3: "\"" >
     | < OPEN_BRACKET_4: "(" >
     | < CLOSE_BRACKET_4: ")" >
+    | < OPEN_BRACKET_5: "`" >
+    | < CLOSE_BRACKET_5: "`" >
+
 
 
     | < EOL: "\n" >
@@ -139,13 +142,14 @@ TOKEN:
 
 void Identifier(): {}
 {
-    IdentifierHead() |
-    IdentifierHead() IdentifierCharacter() |
-    ImplicitParameterName()
+    IdentifierHead() (IdentifierCharacter())?
+    | <OPEN_BRACKET_5> IdentifierHead() (IdentifierCharacter())? <CLOSE_BRACKET_5>
+    | ImplicitParameterName()
 }
 
 void IdentifierHead(): {}
 {
+    // TODO: Доделать и разобраться
     <CHARS_GROUP_1_1> |
     <CHARS_GROUP_1_2> |
     <CHARS_GROUP_1_3> |
@@ -155,14 +159,13 @@ void IdentifierHead(): {}
 
 void IdentifierCharacter(): {}
 {
-    <DIGITS> |
-    IdentifierHead()
+    <DIGITS>
+    | IdentifierHead()
 }
 
 void IdentifierCharacters(): {}
 {
-    IdentifierCharacter() |
-    IdentifierCharacter() IdentifierCharacters()
+    IdentifierCharacter() (IdentifierCharacters())?
 }
 
 void ImplicitParameterName(): {}
@@ -176,21 +179,22 @@ void ImplicitParameterName(): {}
 
 void Literal(): {}
 {
-    NumericLiteral() | StringLiteral() | BooleanLiteral() | NilLiteral()
+    NumericLiteral()
+    | StringLiteral()
+    | BooleanLiteral()
+    | NilLiteral()
 }
 
 void NumericLiteral(): {}
 {
-    IntegerLiteral() |
-    <MINUS> IntegerLiteral() |
-    FloatingPointLiteral() |
-    <MINUS> FloatingPointLiteral()
+    (<MINUS>)? IntegerLiteral()
+    | (<MINUS>)? FloatingPointLiteral()
 }
 
 void BooleanLiteral(): {}
 {
-    <TRUE> |
-    <FAlSE>
+    <TRUE>
+    | <FAlSE>
 }
 
 void NilLiteral(): {}
@@ -204,82 +208,75 @@ void NilLiteral(): {}
 
 void IntegerLiteral(): {}
 {
-    BinaryLiteral() |
-    OctalLiteral() |
-    DecimalLiteral() |
-    HexadecimalLiteral()
+    BinaryLiteral()
+    | OctalLiteral()
+    | DecimalLiteral()
+    | HexadecimalLiteral()
 }
 
 void BinaryLiteral(): {}
 {
-    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> |
-    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> BinaryLiteralCharacter()
+    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> (BinaryLiteralCharacter())?
 }
 
 
 void BinaryLiteralCharacter(): {}
 {
-    <BINARY_DIGITS> |
-    <UNDERSCORE>
+    <BINARY_DIGITS>
+    | <UNDERSCORE>
 }
 
 void OctalLiteral(): {}
 {
-    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> |
-    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> OctalLiteralCharacters()
+    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> (OctalLiteralCharacters())?
 }
 
 void OctalLiteralCharacter(): {}
 {
-    <OCTAL_DIGITS> |
-    <UNDERSCORE>
+    <OCTAL_DIGITS>
+    | <UNDERSCORE>
 }
 
 void OctalLiteralCharacters(): {}
 {
-    OctalLiteralCharacter() |
-    OctalLiteralCharacter() OctalLiteralCharacters()
+    OctalLiteralCharacter() (OctalLiteralCharacters())?
 }
 
 void DecimalLiteral(): {}
 {
-    <DECIMAL_DIGITS> |
-    <DECIMAL_DIGITS> DecimalLiteralCharacter()
+    <DECIMAL_DIGITS> (DecimalLiteralCharacter())?
 }
 
 void DecimalDigits(): {}
 {
-    <DECIMAL_DIGITS> |
-    <DECIMAL_DIGITS> DecimalDigits()
+    <DECIMAL_DIGITS> (DecimalDigits())?
 }
 
 void DecimalLiteralCharacter(): {}
 {
-    <DECIMAL_DIGITS> |
-    <UNDERSCORE>
+    <DECIMAL_DIGITS>
+    | <UNDERSCORE>
 }
 
 void DecimalLiteralCharacters(): {}
 {
-    DecimalLiteralCharacter() |
-    DecimalLiteralCharacter() DecimalLiteralCharacters()
+    DecimalLiteralCharacter() (DecimalLiteralCharacters())?
 }
 
 void HexadecimalLiteral(): {}
 {
-    <HEXADECIMAL_DIGITS_BEGIN> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
+    <HEXADECIMAL_DIGITS_BEGIN> <HEXADECIMAL_DIGITS> (HexadecimalLiteralCharacters())?
 }
 
 void HexadecimalLiteralCharacter(): {}
 {
-    <HEXADECIMAL_DIGITS> |
-    <UNDERSCORE>
+    <HEXADECIMAL_DIGITS>
+    | <UNDERSCORE>
 }
 
 void HexadecimalLiteralCharacters(): {}
 {
-    HexadecimalLiteralCharacter() |
-    HexadecimalLiteralCharacter() HexadecimalLiteralCharacters()
+    HexadecimalLiteralCharacter() (HexadecimalLiteralCharacters())?
 }
 
 /* ===================================================================
@@ -288,9 +285,7 @@ void HexadecimalLiteralCharacters(): {}
 
 void FloatingPointLiteral(): {}
 {
-    DecimalLiteral() |
-    DecimalLiteral() DecimalFraction() |
-    DecimalLiteral() DecimalFraction()
+    DecimalLiteral() (DecimalFraction())? (DecimalExponent())?
 }
 
 void DecimalFraction(): {}
@@ -300,22 +295,20 @@ void DecimalFraction(): {}
 
 void DecimalExponent(): {}
 {
-    <E> <PLUS> DecimalLiteral() |
-    <E> <MINUS> DecimalLiteral() |
-    <E> DecimalLiteral()
+    <E> (<PLUS>)? DecimalLiteral()
+    | <E> (<MINUS>)? DecimalLiteral()
 }
 
 void HexadecimalFraction(): {}
 {
-    <DOT> <HEXADECIMAL_DIGITS> |
-    <DOT> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
+    <DOT> <HEXADECIMAL_DIGITS>
+    | <DOT> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
 }
 
 void HexadecimalExponent(): {}
 {
-    <P> <PLUS> DecimalLiteral() |
-    <P> <MINUS> DecimalLiteral() |
-    <P> DecimalLiteral()
+    <P> (<PLUS>)? DecimalLiteral()
+    | <P> (<MINUS>)? DecimalLiteral()
 }
 
 /* ===================================================================
@@ -324,20 +317,18 @@ void HexadecimalExponent(): {}
 
 void StringLiteral(): {}
 {
-    StaticStringLiteral() |
-    InterpolatedStringLiteral()
+    StaticStringLiteral()
+    | InterpolatedStringLiteral()
 }
 
 void StaticStringLiteral(): {}
 {
-    <OPEN_BRACKET_3> QuotedText() <CLOSE_BRACKET_3> |
-    <OPEN_BRACKET_3> <CLOSE_BRACKET_3>
+    <OPEN_BRACKET_3> (QuotedText())? <CLOSE_BRACKET_3>
 }
 
 void QuotedText(): {}
 {
-    QuotedTextItem() |
-    QuotedTextItem() QuotedText()
+    QuotedTextItem() (QuotedText())?
 }
 
 void QuotedTextItem(): {}
@@ -347,20 +338,18 @@ void QuotedTextItem(): {}
 
 void InterpolatedStringLiteral(): {}
 {
-    <OPEN_BRACKET_3> InterpolatedText() <CLOSE_BRACKET_3> |
-    <OPEN_BRACKET_3> <CLOSE_BRACKET_3>
+    <OPEN_BRACKET_3> (InterpolatedText())? <CLOSE_BRACKET_3>
 }
 
 void InterpolatedText(): {}
 {
-    InterpolatedTextItem() |
-    InterpolatedTextItem() InterpolatedText()
+    InterpolatedTextItem() (InterpolatedText())?
 }
 
 void InterpolatedTextItem(): {}
 {
-    <BACK_SLASH> <OPEN_BRACKET_4> Expression() <CLOSE_BRACKET_4> |
-    QuotedTextItem()
+    <BACK_SLASH> <OPEN_BRACKET_4> Expression() <CLOSE_BRACKET_4>
+    | QuotedTextItem()
 }
 
 /* ===================================================================
@@ -388,8 +377,7 @@ void OperatorCharacter(): {}
 
 void OperatorCharacters(): {}
 {
-    OperatorCharacter() |
-    OctalLiteralCharacter() OperatorCharacters()
+    OperatorCharacter() (OperatorCharacters())?
 }
 
 
@@ -403,17 +391,17 @@ void OperatorCharacters(): {}
 
 void Type(): {}
 {
-    ArrayType() |
-    DictionaryType() |
-    FunctionType() |
-    TypeIdentifier() |
-    TupleType() |
-    OptionalType() |
-    ImplicitlyUnwrappedOptionalType() |
-    ProtocolCompositionType() |
-    MetatypeType() |
-    <ANY> |
-    <SELF>
+    ArrayType()
+    | DictionaryType()
+    | FunctionType()
+    | TypeIdentifier()
+    | TupleType()
+    | OptionalType()
+    | ImplicitlyUnwrappedOptionalType()
+    | ProtocolCompositionType()
+    | MetatypeType()
+    | <ANY>
+    | <SELF>
 }
 
 /* ===================================================================
@@ -422,10 +410,7 @@ void Type(): {}
 
 void TypeAnnotation(): {}
 {
-    <COLON> Type() |
-    <COLON> Attributes() Type() |
-    <COLON> <INOUT> Type() |
-    <COLON> Attributes() <INOUT> Type()
+    <COLON> (Attributes())? (<INOUT>)? Type()
 }
 
 /* ===================================================================
@@ -434,10 +419,8 @@ void TypeAnnotation(): {}
 
 void TypeIdentifier(): {}
 {
-    TypeName() |
-    TypeName() GenericArgumentClause() |
-    TypeName() <DOT> TypeIdentifier() |
-    TypeName() GenericArgumentClause() <DOT> TypeIdentifier()
+    TypeName() (GenericArgumentClause())?
+    | TypeName() (GenericArgumentClause())? <DOT> TypeIdentifier()
 }
 
 void TypeName(): {
@@ -452,7 +435,7 @@ void TypeName(): {
 
 void TupleType(): {}
 {
-    <OPEN_BRACKET_4>  <CLOSE_BRACKET_4>
+    <OPEN_BRACKET_4> (TupleTypeElementList())? <CLOSE_BRACKET_4>
 }
 
 void TupleTypeElementList(): {}
@@ -477,19 +460,14 @@ void ElementName(): {}
 
 void FunctionType(): {}
 {
-    Attributes() FunctionTypeArgumentClause() <THROWS> <ARROW_RIGHT> Type() |
-    Attributes() FunctionTypeArgumentClause() <ARROW_RIGHT> Type() |
-    FunctionTypeArgumentClause() <THROWS> <ARROW_RIGHT> Type() |
-    FunctionTypeArgumentClause() <ARROW_RIGHT> Type() |
-    Attributes() FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type() |
-    FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type()
+    (Attributes())? FunctionTypeArgumentClause() (<THROWS>)? <ARROW_RIGHT> Type() |
+    (Attributes())? FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type()
 }
 
 void FunctionTypeArgumentClause(): {}
 {
     <OPEN_BRACKET_4> <CLOSE_BRACKET_4> |
-    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> |
-    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> <THREE_DOTS>
+    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> (<THREE_DOTS>)?
 }
 
 void FunctionTypeArgumentList(): {}
@@ -498,11 +476,9 @@ void FunctionTypeArgumentList(): {}
     FunctionTypeArgument() <COMMA> FunctionTypeArgumentList()
 }
 
-void uFunctionTypeArgument(): {}
+void FunctionTypeArgument(): {}
 {
-    Attributes() <INOUT> Type() |
-    Attributes() Type() |
-    Type() |
+    (Attributes())? (<INOUT>)? Type() |
     ArgumentLabel() TypeAnnotation()
 }
 
@@ -572,8 +548,8 @@ void ProtocolIdentifier(): {}
 
 void MetatypeType(): {}
 {
-    Type() <DOT> <TYPE> |
-    Type() <DOT> <PROTOCOL>
+    Type() <DOT> <TYPE>
+    | Type() <DOT> <PROTOCOL>
 }
 
 /* ===================================================================
@@ -582,14 +558,15 @@ void MetatypeType(): {}
 
 void TypeInheritanceClause(): {}
 {
-    <COLON> <CLASS> <COMMA> TypeInheritanceList() |
-    <COLON> <CLASS> |
-    <COLON> TypeInheritanceList()
+    <COLON> <CLASS> <COMMA> TypeInheritanceList()
+    | <COLON> <CLASS>
+    | <COLON> TypeInheritanceList()
 }
 
 void TypeInheritanceList(): {}
 {
-    TypeIdentifier() | TypeIdentifier() <COMMA> TypeInheritanceList()
+    TypeIdentifier()
+    | TypeIdentifier() <COMMA> TypeInheritanceList()
 }
 
 /* =====================================================================================================================
@@ -601,15 +578,13 @@ void TypeInheritanceList(): {}
    =================================================================== */
 void Expression(): {}
 {
-    <TRY> PrefixExpression() BinaryExpressions() |
-    PrefixExpression() BinaryExpression() |
-    PrefixExpression() |
-    <TRY> PrefixExpression()
+    (<TRY>)? PrefixExpression() (BinaryExpressions())?
 }
 
 void ExpressionList(): {}
 {
-    Expression() | Expression() <COMMA> ExpressionList()
+    Expression()
+    | Expression() <COMMA> ExpressionList()
 }
 
 /* ===================================================================
@@ -618,9 +593,8 @@ void ExpressionList(): {}
 
 void PrefixExpression(): {}
 {
-    PrefixOperator() PostfixExpression() |
-    PostfixExpression() |
-    InOutExpression()
+    (PrefixOperator())? PostfixExpression()
+    | InOutExpression()
 }
 
 void InOutExpression(): {}
@@ -634,18 +608,15 @@ void InOutExpression(): {}
 
 void BinaryExpression(): {}
 {
-    BinaryOperator() PrefixExpression() |
-    <EQUEL> <TRY> PrefixExpression() |
-    <EQUEL> PrefixExpression() |
-    ConditionalOperator() <TRY> PrefixExpression() |
-    ConditionalOperator() PrefixExpression() |
-    TypeCastingOperator()
+    BinaryOperator() PrefixExpression()
+    | <EQUEL> (<TRY>)? PrefixExpression()
+    | ConditionalOperator() (<TRY>)? PrefixExpression()
+    | TypeCastingOperator()
 }
 
 void BinaryExpression(): {}
 {
-    BinaryExpression() |
-    BinaryExpression() BinaryExpressions()
+    BinaryExpression() (BinaryExpressions())?
 }
 
 /* ===================================================================
@@ -654,8 +625,7 @@ void BinaryExpression(): {}
 
 void ConditionalOperator(): {}
 {
-    <QUESTION_MARK> <TRY> Expression() <COLON> |
-    <QUESTION_MARK> Expression() <COLON>
+    <QUESTION_MARK> (<TRY>)? Expression() <COLON>
 }
 
 /* ===================================================================
@@ -664,10 +634,10 @@ void ConditionalOperator(): {}
 
 void TypeCastingOperator(): {}
 {
-    <IS> Type() |
-    <AS> Type() |
-    <AS> <QUESTION_MARK> Type() |
-    <AS> <EXCLAMATION_MARK> Type()
+    <IS> Type()
+    | <AS> Type()
+    | <AS> <QUESTION_MARK> Type()
+    | <AS> <EXCLAMATION_MARK> Type()
 }
 
 /* ===================================================================
@@ -676,18 +646,17 @@ void TypeCastingOperator(): {}
 
 void PrimaryExpression(): {}
 {
-    Identifier() GenericArgumentClause() |
-    Identifier()
-    | LiteralExpression()
-    | SelfExpression()
-    | SuperclassExpression()
-    | ClojureExpression()
-    | ParenthesizedExpression()
-    | TupleExpression()
-    | ImplicitMemberExpression()
-    | WildcardExpression()
-    | SelectorExpression()
-    | KeyPathExpression()
+    Identifier() (GenericArgumentClause())? |
+    LiteralExpression() |
+    SelfExpression() |
+    SuperclassExpression() |
+    ClojureExpression() |
+    ParenthesizedExpression() |
+    TupleExpression() |
+    ImplicitMemberExpression() |
+    WildcardExpression() |
+    SelectorExpression()|
+    KeyPathExpression()
 }
 
 /* ===================================================================
@@ -959,19 +928,48 @@ void LiteralExpression(): {}
                         5.1. GRAMMAR OF A DECLARATION
    =================================================================== */
 
+void Declaration(): {}
+{
+    ImportDeclaration()
+    | ConstantDeclaration()
+    | VariableDeclaration()
+    | TypealiasDeclaration()
+    | FunctionDeclaration()
+    | EnumDeclaration()
+    | StructDeclaration()
+    | ClassDeclaration()
+    | ProtocolDeclaration()
+    | InitializerDeclaration()
+    | DeinitializerDeclaration()
+    | ExtensionDeclaration()
+    | SubscriptDeclaration()
+    | OperatorDeclaration()
+    | PrecedenceGroupDeclaration()
+}
 
+void Declarations(): {}
+{
+    Declaration() (Declarations())?
+}
 
 /* ===================================================================
                         5.2. GRAMMAR OF A TOP-LEVEL DECLARATION
    =================================================================== */
 
-
+void TopLevelDeclaration(): {}
+{
+    (Statements())?
+}
 
 /* ===================================================================
                         5.3. GRAMMAR OF A CODE BLOCK
    =================================================================== */
 
-
+void CodeBlock(): {}
+{
+    // TODO: brackets
+    <DOT> <DOT>
+}
 
 /* ===================================================================
                         5.4. GRAMMAR OF AN IMPORT DECLARATION
