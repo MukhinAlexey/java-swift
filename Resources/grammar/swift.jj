@@ -1924,6 +1924,83 @@ void Initializer(): {}
 /* ===================================================================
                         5.6. GRAMMAR OF A VARIABLE DECLARATION
    =================================================================== */
+void VariableDeclaration(): {}
+{
+    VariableDeclarationHead() PatternInitializerList()
+    | VariableDeclarationHead() VariableName() TypeAnnotation() CodeBlock()
+    | VariableDeclarationHead() VariableName() TypeAnnotation() GetterSetterBlock()
+    | VariableDeclarationHead() VariableName() TypeAnnotation() GetterSetterKeywordBlock()
+    | VariableDeclarationHead() VariableName() Initializer() WillSetDidSetBlock()
+    | VariableDeclarationHead() VariableName() TypeAnnotation() (Initializer())? WillSetDidSetBlock()
+}
+
+
+void VariableDeclarationHead(): {}
+{
+    (Attributes())? (DeclarationModifiers())? <VAR>
+}
+
+void VariableName(): {}
+{
+    Identifier()
+}
+
+
+void GetterSetterBlock(): {}
+{
+    CodeBlock()
+    | <OPEN_BRACKET> GetterClause() (SetterClause())? <CLOSED_BRACKET>
+    | <OPEN_BRACKET> SetterClause() GetterClause() <CLOSED_BRACKET>
+}
+
+void GetterClause(): {}
+{
+    (Attributes())? (MutationModifier())? <GET> CodeBlock()
+}
+
+void SetterClause(): {}
+{
+   (Attributes())? (MutationModifier())? <SET> (SetterName())? CodeBlock()
+}
+
+void SetterName(): {}
+{
+    <OPEN_PARENTHESIS> Identifier() <CLOSED_PARENTHESIS>
+}
+
+
+void GetterSetterKeywordBlock(): {}
+{
+    <OPEN_BRACKET> GetterKeywordClause() (SetterKeywordClause())? <CLOSED_BRACKET>
+    | <OPEN_BRACKET> SetterKeywordClause() GetterKeywordClause() <CLOSED_BRACKET>
+}
+
+void GetterKeywordClause(): {}
+{
+    (Attributes())? (MutationModifier())? <GET>
+}
+
+void SetterKeywordClause(): {}
+{
+   (Attributes())? (MutationModifier())? <SET>
+}
+
+
+void WillSetDidSetBlock(): {}
+{
+    <OPEN_BRACKET> WillSetClause() (DidSetClause())? <CLOSED_BRACKET>
+    | <OPEN_BRACKET> DidSetClause() (WillSetClause())? <CLOSED_BRACKET>
+}
+
+void WillSetClause(): {}
+{
+    (Attributes())? <WILL_SET> (SetterName())? CodeBlock()
+}
+
+void DidSetClause(): {}
+{
+   (Attributes())? <DID_SET> (SetterName())? CodeBlock()
+}
 
 
 
