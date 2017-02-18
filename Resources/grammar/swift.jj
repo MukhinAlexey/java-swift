@@ -1395,7 +1395,11 @@ void CatchClause(): {}
 /* ===================================================================
                         4.19. GRAMMAR OF A COMPILER CONTROL STATEMENT
    =================================================================== */
-
+void CompilerControlStatement(): {}
+{
+    ConditionalCompilationBlock()
+    | LineControlStatement()
+}
 
 
 /* ===================================================================
