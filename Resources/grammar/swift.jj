@@ -1502,7 +1502,21 @@ void SwiftVersionConfiguration(): {}
 /* ===================================================================
                         4.21. GRAMMAR OF A LINE CONTROL STATEMENT
    =================================================================== */
+void LineControlStatement(): {}
+{
+    <SOURCE_LOCATION> <OPEN_PARENTHESIS> <FILE> FileName() <COMMA> <LINE> LineNumber() <CLOSED_PARENTHESIS> //TODO decide on colon "file:"
+    | <SOURCE_LOCATION> <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
+}
 
+void LineNumber(): {}
+{
+    DecimalDigits()
+}
+
+void FileName(): {}
+{
+    StaticStringLiteral()
+}
 
 
 /* ===================================================================
