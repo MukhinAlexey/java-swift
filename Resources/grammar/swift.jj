@@ -2304,7 +2304,10 @@ void ProtocolMemberDeclaration(): {}
 /* ===================================================================
                         5.13. GRAMMAR OF A PROTOCOL PROPERTY DECLARATION
    =================================================================== */
-
+void ProtocolPropertyDeclaration(): {}
+{
+    VariableDeclarationHead() VariableName() TypeAnnotation() GetterSetterKeywordBlock()
+}
 
 
 /* ===================================================================
