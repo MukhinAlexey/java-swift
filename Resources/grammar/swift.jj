@@ -402,8 +402,6 @@ TOKEN:
     | < LAZY: "lazy" >
     | < OPTIONAL: "optional" >
     | < OVERRIDE: "override" >
-    | < POSTFIX: "postfix" >
-    | < PREFIX: "prefix" >
     | < REQUIRED: "required" >
     | < STATIC: "static" >
     | < PRIVATE: "private" >
@@ -2515,7 +2513,51 @@ void PrecedenceGroupName(): {}
 /* ===================================================================
                         5.24. GRAMMAR OF A DECLARATION MODIFIER
    =================================================================== */
+void DeclarationModifier(): {}
+{
+    <CLASS>
+    | < CONVENIENCE>
+    | <DYNAMIC>
+    | <FINAL>
+    | <INFIX>
+    | <LAZY>
+    | <OPTIONAL>
+    | <OVERRIDE>
+    | <POSTFIX>
+    | <PREFIX>
+    | <REQUIRED>
+    | <STATIC>
+    | <UNOWNED> <OPEN_PARENTHESIS> <SAFE> <CLOSED_PARENTHESIS>
+    | <UNOWNED> <OPEN_PARENTHESIS> <UNSAFE> <CLOSED_PARENTHESIS>
+    | <WEAK>
+    | AccessLevelModifier()
+    | MutationModifier()
+}
 
+void DeclarationModifiers(): {}
+{
+    DeclarationModifier() (DeclarationModifiers())?
+}
+
+void AccessLevelModifier(): {}
+{
+    <PRIVATE>
+    | <PRIVATE> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
+    | <FILEPRIVATE>
+    | <FILEPRIVATE> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
+    | <INTERNAL>
+    | <INTERNAL> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
+    | <PUBLIC>
+    | <PUBLIC> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
+    | <OPEN>
+    | <OPEN> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
+}
+
+void MutationModifier(): {}
+{
+    <MUTATING>
+    | <NON_MUTATING>
+}
 
 
 
