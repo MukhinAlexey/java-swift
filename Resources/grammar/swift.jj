@@ -2007,7 +2007,20 @@ void DidSetClause(): {}
 /* ===================================================================
                         5.7. GRAMMAR OF A TYPE ALIAS DECLARATION
    =================================================================== */
+void TypealiasDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? <TYPE_ALIAS> TypealiasName() (GenericParameterClause())? TypealiasAssignment()
+}
 
+void TypealiasName(): {}
+{
+    Identifier()
+}
+
+void TypealiasAssignment(): {}
+{
+    <ASSIGN> Type()
+}
 
 
 /* ===================================================================
