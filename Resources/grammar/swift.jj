@@ -2430,7 +2430,34 @@ void SubscriptResult(): {}
 /* ===================================================================
                         5.22. GRAMMAR OF AN OPERATOR DECLARATION
    =================================================================== */
+void OperatorDeclaration(): {}
+{
+    PrefixOperatorDeclaration()
+    | PostfixOperatorDeclaration()
+    | InfixOperatorDeclaration()
+}
 
+
+void PrefixOperatorDeclaration(): {}
+{
+    <PREFIX> <OPERATOR> Operator()
+}
+
+void PostfixOperatorDeclaration(): {}
+{
+    <POSTFIX> <OPERATOR> Operator()
+}
+
+void InfixOperatorDeclaration(): {}
+{
+    <INFIX> <OPERATOR> Operator() (InfixOperatorGroup())?
+}
+
+
+void InfixOperatorGroup(): {}
+{
+    PrecedenceGroupName()
+}
 
 
 /* ===================================================================
