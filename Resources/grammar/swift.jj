@@ -1405,7 +1405,98 @@ void CompilerControlStatement(): {}
 /* ===================================================================
                         4.20. GRAMMAR OF A CONDITIONAL COMPILATION BLOCK
    =================================================================== */
+void ConditionalCompilationBlock(): {}
+{
+    IfDirectiveClause() (ElseifDirectiveClauses())? (ElseDirectiveClause())? EndifDirective()
+}
 
+
+void IfDirectiveClause(): {}
+{
+    IfDirective() CompilationCondition() (Statements())?
+}
+
+void ElseifDirectiveClauses(): {}
+{
+    ElseifDirectiveClause() (ElseifDirectiveClauses())?
+}
+
+void ElseifDirectiveClause(): {}
+{
+    ElseifDirective() CompilationCondition() (Statements())?
+}
+
+void ElseDirectiveClause(): {}
+{
+    ElseDirective() (Statements())?
+}
+
+
+void IfDirective(): {}
+{
+    <SHARP_IF>
+}
+
+void ElseifDirective(): {}
+{
+    <SHARP_ELSEIF>
+}
+
+void ElseDirective(): {}
+{
+    <SHARP_ELSE>
+}
+
+void EndifDirective(): {}
+{
+    <SHARP_ENDIF>
+}
+
+
+void CompilationCondition(): {}
+{
+    PlatformCondition()
+    | Identifier()
+    | BooleanLiteral()
+    | <OPEN_PARENTHESIS> CompilationCondition() <CLOSED_PARENTHESIS>
+    | <EXCLAMATION_MARK> CompilationCondition()
+    | CompilationCondition() <DBL_AMPERSAND> CompilationCondition()
+    | CompilationCondition() <DBL_OR> CompilationCondition()
+}
+
+
+void PlatformCondition(): {}
+{
+    <OS> <OPEN_PARENTHESIS> OperatingSystem() <CLOSED_PARENTHESIS>
+    | <ARCH> <OPEN_PARENTHESIS> Architecture() <CLOSED_PARENTHESIS>
+    | <SWIFT> <OPEN_PARENTHESIS> <MORE_OR_EQUALS> SwiftVersion() <CLOSED_PARENTHESIS>
+}
+
+void OperatingSystem(): {}
+{
+    <MAC_OS>
+    | <IOS>
+    | <WATCH_OS>
+    | <TV_OS>
+}
+
+void Architecture(): {}
+{
+    <I_386>
+    | <X_86_64>
+    | <ARM>
+    | <ARM_64>
+}
+
+void SwiftVersion(): {}
+{
+    DecimalDigits() (SwiftVersionConfiguration())?
+}
+
+void SwiftVersionConfiguration(): {}
+{
+    <DOT> DecimalDigits() (SwiftVersionConfiguration())?
+}
 
 
 /* ===================================================================
