@@ -22,54 +22,43 @@ PARSER_END(JavaSwift)
 TOKEN:
 {
 
-    < CHARS_GROUP_1_1: ["A"-"Z"] >
-    | < CHARS_GROUP_1_2: ["a"-"z"] >
-    | < CHARS_GROUP_1_3: "_" >
-    | < CHARS_GROUP_1_4: ("U+00A8") | ("U+00AA") | ("U+00AD") ("U+00AF") | (["U+00B2"-"U+00B5"]) | (["U+00B7"-"U+00BA"]) >
-    | < CHARS_GROUP_1_5: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
+    < UPPER_LETTER: ["A"-"Z"] >
+    | < LOWER_LETTER: ["a"-"z"] >
+    | < UNDERSCORE: "_" >
+    | < EXTENDED_UNICODE: ("U+00A8") | ("U+00AA") | ("U+00AD") | ("U+00AF") | (["U+00B2"-"U+00B5"]) | (["U+00B7"-"U+00BA"]) >
+    | < EXTENDED_UNICODE: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
+    | < EXTENDED_UNICODE: (["U+0100"–"U+02FF"]) | (["U+0370"-"U+167F"]) | (["U+1681"-"U+180D"]) | (["U+180F"-"U+1DBF"]) >
+    | < EXTENDED_UNICODE: (["U+1E00"–"U+1FFF"]) >
+    | < EXTENDED_UNICODE: (["U+200B"–"U+200D"]) | (["U+202A"-"U+202E"]) | (["U+203F"-"U+2040"]) | ("U+2054") | (["U+2060"-"U+206F"]) >
+    | < EXTENDED_UNICODE: (["U+2070"–"U+20CF"]) | (["U+2100"-"U+218F"]) | (["U+2460"-"U+24FF"]) | (["U+2776"-"U+2793"]) >
+    | < EXTENDED_UNICODE: (["U+2C00"–"U+2DFF "]) | (["U+2E80"-"U+2FFF"]) >
+    | < EXTENDED_UNICODE: (["U+3004"–"U+3007"]) | (["U+3021"-"U+302F"]) | (["U+3031"-"U+303F"]) | (["U+3040"-"U+D7FF"]) >
+    | < EXTENDED_UNICODE: (["U+F900"–"U+FD3D"]) | (["U+FD40"-"U+FDCF"]) | (["U+FDF0"-"U+FE1F"]) | (["U+FE30"-"U+FE44"]) >
+    | < EXTENDED_UNICODE: (["U+FE47"–"U+FFFD"]) >
+    | < EXTENDED_UNICODE: (["U+10000"–"U+1FFFD"]) | (["U+20000"-"U+2FFFD"]) | (["U+30000"-"U+3FFFD"]) | (["U+40000"-"U+4FFFD"]) >
+    | < EXTENDED_UNICODE: (["U+50000"–"U+5FFFD"]) | (["U+60000"-"U+6FFFD"]) | (["U+70000"-"U+7FFFD"]) | (["U+80000"-"U+8FFFD"]) >
+    | < EXTENDED_UNICODE: (["U+90000"–"U+9FFFD"]) | (["U+A0000"-"U+AFFFD"]) | (["U+B0000"-"U+BFFFD"]) | (["U+C0000"-"U+CFFFD"]) >
+    | < EXTENDED_UNICODE: (["U+D0000"–"U+DFFFD "]) | (["U+E0000"-"U+EFFFD"]) >
+    | < EXTENDED_UNICODE: (["U+0300"–"U+036F "]) | (["U+1DC0"-"U+1DFF"]) | (["U+20D0"-"U+20FF"]) | (["U+FE20"-"U+FE2F"]) >
 
-    | < ESCAPED_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
-    | < ESCAPED_CHARACTERS: ("\\u") (<OPEN_BRACKET>) ("Between one and eight hexadecimal digits") (<CLOSED_BRACKET>) >
+    | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
+    | < ESCAPE_CHARACTERS: ("\\u") (<OPEN_BRACKET>) ("Between one and eight hexadecimal digits") (<CLOSED_BRACKET>) > \\TODO check regex (unicode-scalar-digits → Between one and eight hexadecimal digits)
 
 
     /* ================================
                     Digits
        ================================ */
-    | < DIGITS: ["0"-"9"]>
+    | < DIGIT: ["0"-"9"]>
 
-    | < BINARY_DIGITS_BEGIN: "0b">
-    | < BINARY_DIGITS: ["0"-"1"] >
+    | < BINARY_DIGIT_BEGIN: "0b">
+    | < BINARY_DIGIT: ["0"-"1"] >
 
-    | < OCTAL_DIGITS_BEGIN: "0o">
-    | < OCTAL_DIGITS: ["0"-"7"] >
-    | < DECIMAL_DIGITS: (<DIGITS>)>
+    | < OCTAL_DIGIT_BEGIN: "0o">
+    | < OCTAL_DIGIT: ["0"-"7"] >
+    | < DECIMAL_DIGIT: (<DIGIT>)>
 
-    | < HEXADECIMAL_DIGITS_BEGIN: "0x">
-    | < HEXADECIMAL_DIGITS: (<DECIMAL_DIGITS>) | (["a"-"f"]) | (["A"-"F"])>
-
-
-    /* ================================
-                    Loops
-       ================================ */
-    | < WHILE: "while" >
-    | < FOR: "for" >
-
-    | < AS: "as" >
-    | < IS: "is" >
-    | < CASE: "case" >
-    | < TRY: "try" | "try?" | "try!" >
-    | < TRUE: "true" >
-    | < FALSE: "false" >
-    | < NIL: "nil" >
-    | < ANY: "any" >
-    | < SELF: "self" >
-    | < INOUT: "inout" >
-    | < THROWS: "throws">
-    | < RETHROWS: "rethrows">
-    | < TYPE: "Type" >
-    | < PROTOCOL: "Protocol">
-    | < CLASS: "class" >
-
+    | < HEXADECIMAL_DIGIT_BEGIN: "0x">
+    | < HEXADECIMAL_DIGIT: (<DECIMAL_DIGIT>) | (["a"-"f"]) | (["A"-"F"])>
 
 
     /* ================================
@@ -77,31 +66,378 @@ TOKEN:
        ================================ */
     | < PLUS: "+" >
     | < MINUS: "-" >
-    | < EQUEL: "=" >
+    | < ASSIGN: "=" >
     | < E: ("E") | ("e") >
     | < P: ("P") | ("p") >
+    | <STAR: "*" >
+    | <PERCENT: "%" >
+    | <MORE_OR_EQUALS: ">=" >
+    | <LESS_OR_EQUALS: "<=" >
+    | <EQUALS: "==" >
+
+    /* ================================
+                    Literals
+       ================================ */
+    | < TRUE: "true">
+    | < FALSE: "false">
+    | < NIL: "nil">
+    | < SHARP_FILE: "#file" >
+    | < SHARP_LINE: "#line" >
+    | < COLUMN: "#column" >
+    | < FUNCTION: "#function" >
+    | < COLOR_LITERAL: "#colorLiteral" >
+    | < RED: "red" >
+    | < GREEN: "green" >
+    | < BLUE: "blue" >
+    | < ALPHA: "alpha" >
+    | < FILTER_LITERAL: "#fileLiteral" >
+    | < IMAGE_LITERAL: "#imageLiteral" >
+    | < RESOURCE_NAME: "resourceName" >
 
 
+    /* ================================
+                    Operators
+       ================================ */
+    | < OPERATOR_HEAD: (["U+00A1"–"U+00A7"]) >
+    | < OPERATOR_HEAD: ("U+00A9") | ("U+00AB") >
+    | < OPERATOR_HEAD: ("U+00AC ") | ("U+00AE") >
+    | < OPERATOR_HEAD: (["U+00B0"–"U+00B1"]) | ("U+00B6 ") | ("U+00BB") | ("U+00BF ") | ("U+00D7") | ("U+00F7") >
+    | < OPERATOR_HEAD: (["U+2016"–"U+2017 "]) | (["U+2020"–"U+2027 "]) >
+    | < OPERATOR_HEAD: (["U+2030"–"U+203E"]) >
+    | < OPERATOR_HEAD: (["U+2041"–"U+2053"]) >
+    | < OPERATOR_HEAD: (["U+2055"–"U+205E"]) >
+    | < OPERATOR_HEAD: (["U+2190"–"U+23FF"]) >
+    | < OPERATOR_HEAD: (["U+2500"–"U+2775"]) >
+    | < OPERATOR_HEAD: (["U+2794"–"U+2BFF"]) >
+    | < OPERATOR_HEAD: (["U+2E00"–"U+2E7F"]) >
+    | < OPERATOR_HEAD: (["U+3001"–"U+3003"]) >
+    | < OPERATOR_HEAD: (["U+3008"–"U+3030"]) >
+
+    | < OPERATOR_CHARACTER: (["U+0300"–"U+036F"]) >
+    | < OPERATOR_CHARACTER: (["U+1DC0"–"U+1DFF"]) >
+    | < OPERATOR_CHARACTER: (["U+20D0"–"U+20FF"]) >
+    | < OPERATOR_CHARACTER: (["U+FE00"–"U+FE0F"]) >
+    | < OPERATOR_CHARACTER: (["U+FE20"–"U+FE2F"]) >
+    | < OPERATOR_CHARACTER: (["U+E0100"–"U+E01EF"]) >
+
+
+    /* ================================
+                    Types
+       ================================ */
+    | < ANY: "any" >
     | < ARROW_RIGHT: "->">
-    | < UNDERSCORE: "_">
-
-    | < SLASH: "/" >
-    | < BACK_SLASH: "\\" >
-
-    | < DOLLAR: "$" >
-    | < AMPERSAND: "&" >
-    | < DBL_AMPERSAND: "&&" >
-
-    | < QUESTION_MARK: "?" >
-    | < EXCLAMATION_MARK: "!" >
 
 
+    /* ================================
+                    Annotation
+       ================================ */
+    | < INOUT: "inout" >
+
+
+    /* ================================
+                    Annotation
+       ================================ */
+    | < THROWS: "throws">
+    | < RETHROWS: "rethrows">
+
+
+    /* ================================
+                    Metatype
+       ================================ */
+    | < CAPITAL_TYPE: "Type" >
+    | < CAPITAL_PROTOCOL: "Protocol">
+
+
+    /* ================================
+                    Type Inheritance
+       ================================ */
+    | < CLASS: "class" >
+
+
+    /* ================================
+                    Try
+       ================================ */
+    | < TRY: "try" >
+
+
+    /* ================================
+                    Type-Casting
+       ================================ */
+    | < AS: "as" >
+    | < IS: "is" >
+
+    /* ================================
+                    Self
+       ================================ */
+    | < SELF: "self" >
+    | < INIT: "init" >
+
+
+    /* ================================
+                    Superclass
+       ================================ */
+    | < SUPER: "super" >
+
+
+    /* ================================
+                    Closure
+       ================================ */
+    | < IN: "in" >
+    | < WEAK: "weak" >
+    | < UNOWNED: "unowned" >
+    | < SAFE: "safe" >
+    | < UNSAFE: "unsafe" >
+
+
+    /* ================================
+                    Selector
+       ================================ */
+    | < SELECTOR: "#selector" >
+    | < GETTER: "getter" >
+    | < SETTER: "setter" >
+
+
+    /* ================================
+                    Key-Path
+       ================================ */
+    | < KEY_PATH: "#keyPath" >
+
+
+    /* ================================
+                    Dynamic Type
+       ================================ */
+    | < TYPE: "type" >
+    | < OF: "of" >
+
+
+    /* ================================
+                    Dynamic Type
+       ================================ */
+    | < LET: "let" >
+    | < VAR: "var" >
+
+
+    /* ================================
+                    Loops
+       ================================ */
+    | < WHILE: "while" >
+    | < FOR: "for" >
+    | < CASE: "case" >
+    | < REPEAT: "repeat" >
+    | < BREAK: "break" >
+    | < CONTINUE: "continue" >
+
+
+    /* ================================
+                    Conditions
+       ================================ */
+    | < IF: "if" >
+    | < ELSE: "else" >
+    | < SWITCH: "switch" >
+    | < DEFAULT: "default" >
+    | < WHERE: "where" >
+
+
+    /* ================================
+                    Guard
+       ================================ */
+    | < GUARD: "guard" >
+
+
+    /* ================================
+                    Fallthrough
+       ================================ */
+    | < FALLTHROUGH: "fallthrough" >
+    
+    
+    /* ================================
+                    Return
+       ================================ */
+    | < RETURN: "return" >
+    
+    
+    /* ================================
+                    Throw
+       ================================ */
+    | < Throw: "throw" >
+    
+    
+    /* ================================
+                    Defer
+       ================================ */
+    | < DEFER: "defer" >
+    
+    
+    /* ================================
+                    Do
+       ================================ */
+    | < DO: "do" >
+    | < CATCH: "catch" >
+    
+    
+    /* ================================
+                    Conditional Compilation
+       ================================ */
+    | < SHARP_IF: "#if" >
+    | < SHARP_ELSEIF: "#elseif" >
+    | < SHARP_ELSE: "#else" >
+    | < SHARP_ENDIF: "#endif" >
+    | < OS: "os" >
+    | < ARCH: "arch" >
+    | < SWIFT: "swift" >
+    | < MAC_OS: "macOS" >
+    | < IOS: "iOS" >
+    | < WATCH_OS: "watchOS" >
+    | < TV_OS: "tvOS" >
+    | < I_386: "i386" >
+    | < X_86_64: "x86_64" >
+    | < ARM: "arm" >
+    | < ARM_64: "arm64" >
+    
+    
+    /* ================================
+                    Line Control
+       ================================ */
+    | < SOURCE_LOCATION: "#sourceLocation" >
+    | < FILE: "file" >
+    | < LINE: "line" >
+
+
+    /* ================================
+                    Availability
+       ================================ */
+    | < SHARP_AVAILABLE: "#available" >
+    | < IOS_APP_EXT: "iOSApplicationExtension" >
+    | < MAC_OS_APP_EXT: "macOSApplicationExtension" >
+
+
+    /* ================================
+                    Import
+       ================================ */
+    | < IMPORT: "import" >
+    | < TYPE_ALIAS: "typealias" >
+    | < ENUM: "enum" >
+    | < PROTOCOL: "protocol" >
+    | < FUNC: "func" >
+
+
+    /* ================================
+                    Variable
+       ================================ */
+    | < GET: "get" >
+    | < SET: "set" >
+    | < WILL_SET: "willSet" >
+    | < DID_SET: "didSet" >
+
+
+    /* ================================
+                    Enumeration
+       ================================ */
+    | < INDIRECT: "indirect" >
+
+
+    /* ================================
+                    Structure
+       ================================ */
+    | < STRUCT: "struct" >
+
+
+    /* ================================
+                    Class
+       ================================ */
+    | < FINAL: "final" >
+
+
+    /* ================================
+                    Associated Type
+       ================================ */
+    | < ASSOCIATED_TYPE: "associatedtype" >
+
+
+    /* ================================
+                    Deinitializer
+       ================================ */
+    | < DEINIT: "deinit" >
+
+
+    /* ================================
+                    Extension
+       ================================ */
+    | < EXTENSION: "extension" >
+
+
+    /* ================================
+                    Subscript
+       ================================ */
+    | < SUBSCRIPT: "subscript" >
+
+
+    /* ================================
+                    Operators
+       ================================ */
+    | < PREFIX: "prefix" >
+    | < POSTFIX: "postfix" >
+    | < INFIX: "infix" >
+    | < OPERATOR: "operator" >
+
+
+    /* ================================
+                    Precedence Group
+       ================================ */
+    | < PRECEDENCE_GROUP: "precedencegroup" >
+    | < HIGHER_THAN: "higherThan" >
+    | < LOWER_THAN: "lowerThan" >
+    | < ASSIGNMENT: "assignment" >
+    | < ASSOCIATIVITY: "associativity" >
+    | < LEFT: "left" >
+    | < RIGHT: "right" >
+    | < NONE: "none" >
+
+
+    /* ================================
+                    Declaration
+       ================================ */
+    | < CONVENIENCE: "convenience" >
+    | < DYNAMIC: "dynamic" >
+    | < INFIX: "infix" >
+    | < LAZY: "lazy" >
+    | < OPTIONAL: "optional" >
+    | < OVERRIDE: "override" >
+    | < POSTFIX: "postfix" >
+    | < PREFIX: "prefix" >
+    | < REQUIRED: "required" >
+    | < STATIC: "static" >
+    | < PRIVATE: "private" >
+    | < FILEPRIVATE: "fileprivate"  >
+    | < INTERNAL: "internal" >
+    | < PUBLIC: "public" >
+    | < OPEN: "open" >
+    | < MUTATING: "mutating" >
+    | < NON_MUTATING: "nonmutating" >
+
+
+    /* ================================
+                    Punctuation
+       ================================ */
     | < DOT: "." >
     | < THREE_DOTS: "...">
     | < COMMA: "," >
     | < SEMICOLON: ";" >
     | < COLON: ":" >
+    | < QUESTION_MARK: "?" >
+    | < EXCLAMATION_MARK: "!" >
+    | < SLASH: "/" >
+    | < BACK_SLASH: "\\" >
+    | < DOLLAR: "$" >
+    | < AMPERSAND: "&" >
+    | < DBL_AMPERSAND: "&&" >
+    | < DBL_OR: "||" >
+    | < AT: "@" >
 
+
+    /* ================================
+                    Brackets
+       ================================ */
     | < OPEN_BRACKET: "{" >
     | < CLOSED_BRACKET: "}" >
     | < OPEN_SQUARE_BRACKET: "[" >
@@ -112,17 +448,12 @@ TOKEN:
     | < CLOSED_PARENTHESIS: ")" >
     | < OPEN_QUOTE: "`" >
     | < CLOSED_QUOTE: "`" >
+    | < OPEN_TRIANGULAR_BRACKET: "<" >
+    | < CLOSED_TRIANGULAR_BRACKET: ">" >
 
 
 
     | < EOL: "\n" >
-
-
-    | < ACCESS_LEVEL_MODIFIER: "private" |  "private ( set )" >
-    | < ACCESS_LEVEL_MODIFIER: "fileprivate" | "fileprivate ( set )" >
-    | < ACCESS_LEVEL_MODIFIER: "internal" | "internal ( set )" >
-    | < ACCESS_LEVEL_MODIFIER: "public" | "public ( set )" >
-    | < ACCESS_LEVEL_MODIFIER: "open" | "open ( set )" >
 }
 
 
@@ -150,16 +481,15 @@ void Identifier(): {}
 void IdentifierHead(): {}
 {
     // TODO: Доделать и разобраться
-    <CHARS_GROUP_1_1> |
-    <CHARS_GROUP_1_2> |
-    <CHARS_GROUP_1_3> |
-    <CHARS_GROUP_1_4> |
-    <CHARS_GROUP_1_5>
+    <UPPER_LETTER> |
+    <LOWER_LETTER> |
+    <UNDERSCORE> |
+    <EXTENDED_UNICODE>
 }
 
 void IdentifierCharacter(): {}
 {
-    <DIGITS>
+    <DIGIT>
     | IdentifierHead()
 }
 
@@ -170,7 +500,7 @@ void IdentifierCharacters(): {}
 
 void ImplicitParameterName(): {}
 {
-    <DOLLAR> <DECIMAL_DIGITS>
+    <DOLLAR> <DECIMAL_DIGIT>
 }
 
 /* ===================================================================
@@ -216,24 +546,24 @@ void IntegerLiteral(): {}
 
 void BinaryLiteral(): {}
 {
-    <BINARY_DIGITS_BEGIN> <BINARY_DIGITS> (BinaryLiteralCharacter())?
+    <BINARY_DIGIT_BEGIN> <BINARY_DIGIT> (BinaryLiteralCharacter())?
 }
 
 
 void BinaryLiteralCharacter(): {}
 {
-    <BINARY_DIGITS>
+    <BINARY_DIGIT>
     | <UNDERSCORE>
 }
 
 void OctalLiteral(): {}
 {
-    <OCTAL_DIGITS_BEGIN> <OCTAL_DIGITS> (OctalLiteralCharacters())?
+    <OCTAL_DIGIT_BEGIN> <OCTAL_DIGIT> (OctalLiteralCharacters())?
 }
 
 void OctalLiteralCharacter(): {}
 {
-    <OCTAL_DIGITS>
+    <OCTAL_DIGIT>
     | <UNDERSCORE>
 }
 
@@ -244,17 +574,17 @@ void OctalLiteralCharacters(): {}
 
 void DecimalLiteral(): {}
 {
-    <DECIMAL_DIGITS> (DecimalLiteralCharacter())?
+    <DECIMAL_DIGIT> (DecimalLiteralCharacter())?
 }
 
 void DecimalDigits(): {}
 {
-    <DECIMAL_DIGITS> (DecimalDigits())?
+    <DECIMAL_DIGIT> (DecimalDigits())?
 }
 
 void DecimalLiteralCharacter(): {}
 {
-    <DECIMAL_DIGITS>
+    <DECIMAL_DIGIT>
     | <UNDERSCORE>
 }
 
@@ -265,12 +595,12 @@ void DecimalLiteralCharacters(): {}
 
 void HexadecimalLiteral(): {}
 {
-    <HEXADECIMAL_DIGITS_BEGIN> <HEXADECIMAL_DIGITS> (HexadecimalLiteralCharacters())?
+    <HEXADECIMAL_DIGIT_BEGIN> <HEXADECIMAL_DIGIT> (HexadecimalLiteralCharacters())?
 }
 
 void HexadecimalLiteralCharacter(): {}
 {
-    <HEXADECIMAL_DIGITS>
+    <HEXADECIMAL_DIGIT>
     | <UNDERSCORE>
 }
 
@@ -301,8 +631,8 @@ void DecimalExponent(): {}
 
 void HexadecimalFraction(): {}
 {
-    <DOT> <HEXADECIMAL_DIGITS>
-    | <DOT> <HEXADECIMAL_DIGITS> HexadecimalLiteralCharacters()
+    <DOT> <HEXADECIMAL_DIGIT>
+    | <DOT> <HEXADECIMAL_DIGIT> HexadecimalLiteralCharacters()
 }
 
 void HexadecimalExponent(): {}
@@ -333,7 +663,8 @@ void QuotedText(): {}
 
 void QuotedTextItem(): {}
 {
-    <ESCAPED_CHARACTERS>
+    <ESCAPE_CHARACTERS>
+    \\TODO Any Unicode scalar value except "­, \­, U+000A, or U+000D
 }
 
 void InterpolatedStringLiteral(): {}
@@ -549,7 +880,7 @@ void ProtocolIdentifier(): {}
 void MetatypeType(): {}
 {
     Type() <DOT> <TYPE>
-    | Type() <DOT> <PROTOCOL>
+    | Type() <DOT> <CAPITAL_PROTOCOL>
 }
 
 /* ===================================================================
@@ -602,6 +933,8 @@ void InOutExpression(): {}
     <AMPERSAND> Identifier()
 }
 
+\\TODO  Grammar of a try expression
+
 /* ===================================================================
                         3.3. GRAMMAR OF A BINARY EXPRESSION
    =================================================================== */
@@ -609,7 +942,7 @@ void InOutExpression(): {}
 void BinaryExpression(): {}
 {
     BinaryOperator() PrefixExpression()
-    | <EQUEL> (<TRY>)? PrefixExpression()
+    | <ASSIGN> (<TRY>)? PrefixExpression()
     | ConditionalOperator() (<TRY>)? PrefixExpression()
     | TypeCastingOperator()
 }
