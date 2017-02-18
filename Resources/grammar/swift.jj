@@ -29,7 +29,7 @@ TOKEN:
     | < CHARS_GROUP_1_5: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
 
     | < ESCAPED_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
-    | < ESCAPED_CHARACTERS: ("\\u") (<OPEN_BRACKET_1>) ("Between one and eight hexadecimal digits") (<CLOSE_BRACKET_1>) >
+    | < ESCAPED_CHARACTERS: ("\\u") (<OPEN_BRACKET>) ("Between one and eight hexadecimal digits") (<CLOSED_BRACKET>) >
 
 
     /* ================================
@@ -102,16 +102,16 @@ TOKEN:
     | < SEMICOLON: ";" >
     | < COLON: ":" >
 
-    | < OPEN_BRACKET_1: "{" >
-    | < CLOSE_BRACKET_1: "}" >
-    | < OPEN_BRACKET_2: "[" >
-    | < CLOSE_BRACKET_2: "]" >
-    | < OPEN_BRACKET_3: "\"" >
-    | < CLOSE_BRACKET_3: "\"" >
-    | < OPEN_BRACKET_4: "(" >
-    | < CLOSE_BRACKET_4: ")" >
-    | < OPEN_BRACKET_5: "`" >
-    | < CLOSE_BRACKET_5: "`" >
+    | < OPEN_BRACKET: "{" >
+    | < CLOSED_BRACKET: "}" >
+    | < OPEN_SQUARE_BRACKET: "[" >
+    | < CLOSED_SQUARE_BRACKET: "]" >
+    | < OPEN_DOUBLE_QUOTE: "\"" >
+    | < CLOSED_DOUBLE_QUOTE: "\"" >
+    | < OPEN_PARENTHESIS: "(" >
+    | < CLOSED_PARENTHESIS: ")" >
+    | < OPEN_QUOTE: "`" >
+    | < CLOSED_QUOTE: "`" >
 
 
 
@@ -143,7 +143,7 @@ TOKEN:
 void Identifier(): {}
 {
     IdentifierHead() (IdentifierCharacter())?
-    | <OPEN_BRACKET_5> IdentifierHead() (IdentifierCharacter())? <CLOSE_BRACKET_5>
+    | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <CLOSED_QUOTE>
     | ImplicitParameterName()
 }
 
@@ -323,7 +323,7 @@ void StringLiteral(): {}
 
 void StaticStringLiteral(): {}
 {
-    <OPEN_BRACKET_3> (QuotedText())? <CLOSE_BRACKET_3>
+    <OPEN_DOUBLE_QUOTE> (QuotedText())? <CLOSED_DOUBLE_QUOTE>
 }
 
 void QuotedText(): {}
@@ -338,7 +338,7 @@ void QuotedTextItem(): {}
 
 void InterpolatedStringLiteral(): {}
 {
-    <OPEN_BRACKET_3> (InterpolatedText())? <CLOSE_BRACKET_3>
+    <OPEN_DOUBLE_QUOTE> (InterpolatedText())? <CLOSED_DOUBLE_QUOTE>
 }
 
 void InterpolatedText(): {}
@@ -348,7 +348,7 @@ void InterpolatedText(): {}
 
 void InterpolatedTextItem(): {}
 {
-    <BACK_SLASH> <OPEN_BRACKET_4> Expression() <CLOSE_BRACKET_4>
+    <BACK_SLASH> <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
     | QuotedTextItem()
 }
 
@@ -435,7 +435,7 @@ void TypeName(): {
 
 void TupleType(): {}
 {
-    <OPEN_BRACKET_4> (TupleTypeElementList())? <CLOSE_BRACKET_4>
+    <OPEN_PARENTHESIS> (TupleTypeElementList())? <CLOSED_PARENTHESIS>
 }
 
 void TupleTypeElementList(): {}
@@ -466,8 +466,8 @@ void FunctionType(): {}
 
 void FunctionTypeArgumentClause(): {}
 {
-    <OPEN_BRACKET_4> <CLOSE_BRACKET_4> |
-    <OPEN_BRACKET_4> FunctionTypeArgumentList() <CLOSE_BRACKET_4> (<THREE_DOTS>)?
+    <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS> |
+    <OPEN_PARENTHESIS> FunctionTypeArgumentList() <CLOSED_PARENTHESIS> (<THREE_DOTS>)?
 }
 
 void FunctionTypeArgumentList(): {}
@@ -493,7 +493,7 @@ void ArgumentLabel(): {}
 
 void ArrayType(): {}
 {
-    <OPEN_BRACKET_2> Type() <CLOSE_BRACKET_2>
+    <OPEN_SQUARE_BRACKET> Type() <CLOSED_SQUARE_BRACKET>
 }
 
 /* ===================================================================
@@ -502,7 +502,7 @@ void ArrayType(): {}
 
 void DictionaryType(): {}
 {
-    <OPEN_BRACKET_2> Type() <COLON> Type() <CLOSE_BRACKET_2>
+    <OPEN_SQUARE_BRACKET> Type() <COLON> Type() <CLOSED_SQUARE_BRACKET>
 }
 
 /* ===================================================================
