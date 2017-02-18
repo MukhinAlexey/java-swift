@@ -1859,8 +1859,7 @@ void TopLevelDeclaration(): {}
 
 void CodeBlock(): {}
 {
-    // TODO: brackets
-    <DOT> <DOT>
+    <OPEN_BRACKET> (Statements())? <CLOSED_BRACKET>
 }
 
 /* ===================================================================
