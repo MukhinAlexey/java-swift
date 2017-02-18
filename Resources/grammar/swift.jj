@@ -1217,7 +1217,16 @@ void BranchStatement(): {}
 /* ===================================================================
                         4.7. GRAMMAR OF AN IF STATEMENT
    =================================================================== */
+void IfStatement(): {}
+{
+    <IF> ConditionList() CodeBlock() (ElseClause())?
+}
 
+void ElseClause(): {}
+{
+    <ELSE> CodeBlock()
+    | <ELSE> IfStatement()
+}
 
 
 /* ===================================================================
