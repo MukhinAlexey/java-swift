@@ -1586,7 +1586,51 @@ void TypeCastingPattern(): {}
 /* ===================================================================
                         8.1. GRAMMAR OF A GENERIC PARAMETER CLAUSE
    =================================================================== */
+void GenericParameterClause(): {}
+{
+    <OPEN_TRIANGULAR_BRACKET> GenericParameterList() <CLOSED_TRIANGULAR_BRACKET>
+}
 
+void GenericParameterList(): {}
+{
+    GenericParameter()
+    | GenericParameter() <COMMA> GenericParameterList()
+}
+
+void GenericParameter(): {}
+{
+    TypeName()
+    | TypeName() <COLON> TypeIdentifier()
+    | TypeName() <COLON> ProtocolCompositionType()
+}
+
+void GenericWhereClause(): {}
+{
+    <WHERE> RequirementList()
+}
+
+void RequirementList(): {}
+{
+    Requirement()
+    | Requirement() <COMMA> RequirementList()
+}
+
+void Requirement(): {}
+{
+    ConformanceRequirement()
+    | SameTypeRequirement()
+}
+
+void ConformanceRequirement(): {}
+{
+    TypeIdentifier() <COLON> TypeIdentifier()
+    | TypeIdentifier() <COLON> ProtocolCompositionType()
+}
+
+void SameTypeRequirement(): {}
+{
+    TypeIdentifier() <EQUALS> Type()
+}
 
 
 /* ===================================================================
