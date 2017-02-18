@@ -2322,7 +2322,11 @@ void ProtocolMethodDeclaration(): {}
 /* ===================================================================
                         5.15. GRAMMAR OF A PROTOCOL INITIALIZER DECLARATION
    =================================================================== */
-
+void ProtocolInitializerDeclaration(): {}
+{
+    InitializerHead() (GenericParameterClause())? ParameterClause() (<THROWS>)? (GenericWhereClause())?
+    | InitializerHead() (GenericParameterClause())? ParameterClause() <RETHROWS> (GenericWhereClause())?
+}
 
 
 /* ===================================================================
