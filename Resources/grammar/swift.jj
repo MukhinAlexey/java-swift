@@ -2350,7 +2350,23 @@ void ProtocolAssociatedTypeDeclaration(): {}
 /* ===================================================================
                         5.18. GRAMMAR OF AN INITIALIZER DECLARATION
    =================================================================== */
+void InitializerDeclaration(): {}
+{
+    InitializerHead() (GenericParameterClause())? ParameterClause() (<THROWS>)? (GenericWhereClause())? InitializerBody()
+    | InitializerHead() (GenericParameterClause())? ParameterClause() <RETHROWS> (GenericWhereClause())? InitializerBody()
+}
 
+void InitializerHead(): {}
+{
+    (Attributes())? (DeclarationModifiers())? <INIT>
+    | (Attributes())? (DeclarationModifiers())? <INIT> <QUESTION_MARK>
+    | (Attributes())? (DeclarationModifiers())? <INIT> <EXCLAMATION_MARK>
+}
+
+void InitializerBody(): {}
+{
+    CodeBlock()
+}
 
 
 /* ===================================================================
