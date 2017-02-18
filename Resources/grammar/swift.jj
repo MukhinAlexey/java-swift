@@ -2199,7 +2199,32 @@ void RawValueLiteral(): {}
 /* ===================================================================
                         5.10. GRAMMAR OF A STRUCTURE DECLARATION
    =================================================================== */
+void StructDeclaration(): {}
+{
+    (Attributes())? (AccessLevelModifier())? <STRUCT> StructName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? StructBody()
+}
 
+void StructName(): {}
+{
+    Identifier()
+}
+
+void StructBody(): {}
+{
+    <OPEN_BRACKET> (StructMembers())? <CLOSED_BRACKET>
+}
+
+
+void StructMembers(): {}
+{
+    StructMember() (StructMembers())?
+}
+
+void StructMember(): {}
+{
+    Declaration()
+    | CompilerControlStatement()
+}
 
 
 /* ===================================================================
