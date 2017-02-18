@@ -2026,7 +2026,74 @@ void TypealiasAssignment(): {}
 /* ===================================================================
                         5.8. GRAMMAR OF A FUNCTION DECLARATION
    =================================================================== */
+void FunctionDeclaration(): {}
+{
+    FunctionHead() FunctionName() (GenericParameterClause())? FunctionSignature() (GenericWhereClause())? (FunctionBody())?
+}
 
+
+void FunctionHead(): {}
+{
+    (Attributes())? (DeclarationModifiers())? <FUNC>
+}
+
+void FunctionName(): {}
+{
+    Identifier()
+    | Operator()
+}
+
+
+void FunctionSignature(): {}
+{
+    ParameterClause() (<THROWS>)? (FunctionResult())?
+    | ParameterClause() <RETHROWS> (FunctionResult())?
+}
+
+void FunctionResult(): {}
+{
+    <ARROW_RIGHT> (Attributes())? Type()
+}
+
+void FunctionBody(): {}
+{
+    CodeBlock()
+}
+
+
+void ParameterClause(): {}
+{
+    <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
+    | <OPEN_PARENTHESIS> ParameterList() <CLOSED_PARENTHESIS>
+}
+
+void ParameterList(): {}
+{
+    Parameter()
+    | Parameter() <COMMA> ParameterList()
+}
+
+void Parameter(): {}
+{
+    (ExternalParameterName())? LocalParameterName() TypeAnnotation() (DefaultArgumentClause())?
+    | (ExternalParameterName())? LocalParameterName() TypeAnnotation()
+    | (ExternalParameterName())? LocalParameterName() TypeAnnotation() <THREE_DOTS>
+}
+
+void ExternalParameterName(): {}
+{
+    Identifier()
+}
+
+void LocalParameterName(): {}
+{
+    Identifier()
+}
+
+void DefaultArgumentClause(): {}
+{
+    <ASSIGN> Expression()
+}
 
 
 /* ===================================================================
