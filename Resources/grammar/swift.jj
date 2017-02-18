@@ -2409,7 +2409,22 @@ void ExtensionMember(): {}
 /* ===================================================================
                         5.21. GRAMMAR OF A SUBSCRIPT DECLARATION
    =================================================================== */
+void SubscriptDeclaration(): {}
+{
+    SubscriptHead() SubscriptResult() CodeBlock()
+    | SubscriptHead() SubscriptResult() GetterSetterBlock()
+    | SubscriptHead() SubscriptResult() GetterSetterKeywordBlock()
+}
 
+void SubscriptHead(): {}
+{
+    (Attributes())? (DeclarationModifiers())? <SUBSCRIPT> ParameterClause()
+}
+
+void SubscriptResult(): {}
+{
+    <ARROW_RIGHT> (Attributes())? Type()
+}
 
 
 /* ===================================================================
