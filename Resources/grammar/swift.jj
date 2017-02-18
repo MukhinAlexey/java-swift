@@ -1522,7 +1522,39 @@ void FileName(): {}
 /* ===================================================================
                         4.22. GRAMMAR OF AN AVAILABILITY CONDITION
    =================================================================== */
+void AvailabilityCondition(): {}
+{
+    <SHARP_AVAILABLE> <OPEN_PARENTHESIS> AvailabilityArguments() <CLOSED_PARENTHESIS>
+}
 
+void AvailabilityArguments(): {}
+{
+    AvailabilityArgument()
+    | AvailabilityArgument() <COMMA> AvailabilityArguments()
+}
+
+void AvailabilityArgument(): {}
+{
+    PlatformName() PlatformVersion()
+    | <STAR>
+}
+
+void PlatformName(): {}
+{
+    <IOS>
+    | <IOS_APP_EXT>
+    | <MAC_OS>
+    | <MAC_OS_APP_EXT>
+    | <WATCH_OS>
+    | <TV_OS>
+}
+
+void PlatformVersion(): {}
+{
+    DecimalDigits()
+    | DecimalDigits() <DOT> DecimalDigits()
+    | DecimalDigits() <DOT> DecimalDigits() <DOT> DecimalDigits()
+}
 
 
 
