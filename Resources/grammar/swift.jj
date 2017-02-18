@@ -1898,7 +1898,27 @@ void ImportPathIdentifier(): {}
 /* ===================================================================
                         5.5. GRAMMAR OF A CONSTANT DECLARATION
    =================================================================== */
+void ConstantDeclaration(): {}
+{
+    (Attributes())? (DeclarationModifiers())? <LET> PatternInitializerList()
+}
 
+
+void PatternInitializerList(): {}
+{
+    PatternInitializer()
+    | PatternInitializer() <COMMA> PatternInitializerList()
+}
+
+void PatternInitializer(): {}
+{
+    Pattern() (Initializer())?
+}
+
+void Initializer(): {}
+{
+    <ASSIGN> Expression()
+}
 
 
 /* ===================================================================
