@@ -1197,7 +1197,10 @@ void OptionalBridgingCondition(): {}
 /* ===================================================================
                         4.5. GRAMMAR OF A REPEAT-WHILE STATEMENT
    =================================================================== */
-
+void RepeatWhileStatement(): {}
+{
+    <REPEAT> CodeBlock() <WHILE> Expression()
+}
 
 
 /* ===================================================================
