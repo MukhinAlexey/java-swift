@@ -1376,7 +1376,20 @@ void DeferStatement(): {}
 /* ===================================================================
                         4.18. GRAMMAR OF A DO STATEMENT
    =================================================================== */
+void DoStatement(): {}
+{
+    <DO> CodeBlock() (CatchClauses())?
+}
 
+void CatchClauses(): {}
+{
+    CatchClause() (CatchClauses())?
+}
+
+void CatchClause(): {}
+{
+    <CATCH> (Pattern())? (WhereClause())? CodeBlock()
+}
 
 
 /* ===================================================================
