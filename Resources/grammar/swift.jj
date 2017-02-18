@@ -1865,7 +1865,34 @@ void CodeBlock(): {}
 /* ===================================================================
                         5.4. GRAMMAR OF AN IMPORT DECLARATION
    =================================================================== */
+void ImportDeclaration(): {}
+{
+    (Attributes())? <IMPORT> (ImportKind())? ImportPath()
+}
 
+
+void ImportKind(): {}
+{
+    <TYPE_ALIAS>
+    | <STRUCT>
+    | <CLASS>
+    | <ENUM>
+    | <PROTOCOL>
+    | <VAR>
+    | <FUNC>
+}
+
+void ImportPath(): {}
+{
+    ImportPathIdentifier()
+    | ImportPathIdentifier() <DOT> ImportPath()
+}
+
+void ImportPathIdentifier(): {}
+{
+    Identifier()
+    | Operator()
+}
 
 
 /* ===================================================================
