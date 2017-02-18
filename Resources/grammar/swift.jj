@@ -1121,7 +1121,23 @@ void LiteralExpression(): {}
 /* ===================================================================
                         4.1. GRAMMAR OF A STATEMENT
    =================================================================== */
+void Statement(): {}
+{
+    Expression() (<SEMICOLON>)?
+    | Declaration() (<SEMICOLON>)?
+    | LoopStatement() (<SEMICOLON>)?
+    | BranchStatement() (<SEMICOLON>)?
+    | LabeledStatement() (<SEMICOLON>)?
+    | ControlTransferStatement() (<SEMICOLON>)?
+    | DeferStatement() (<SEMICOLON>)?
+    | DoStatement() (<SEMICOLON>)?
+    | CompilerControlStatement() (<SEMICOLON>)?
+}
 
+void Statements(): {}
+{
+    Statement() (Statements())?
+}
 
 
 /* ===================================================================
