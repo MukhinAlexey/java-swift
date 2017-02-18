@@ -192,8 +192,8 @@ TOKEN:
                     Selector
        ================================ */
     | < SELECTOR: "#selector" >
-    | < GETTER: "getter" >
-    | < SETTER: "setter" >
+    | < GETTER: "getter:" >
+    | < SETTER: "setter:" >
 
 
     /* ================================
@@ -298,8 +298,8 @@ TOKEN:
                     Line Control
        ================================ */
     | < SOURCE_LOCATION: "#sourceLocation" >
-    | < FILE: "file" >
-    | < LINE: "line" >
+    | < FILE: "file:" >
+    | < LINE: "line:" >
 
 
     /* ================================
@@ -931,7 +931,14 @@ void InOutExpression(): {}
     <AMPERSAND> Identifier()
 }
 
-// TODO:  Grammar of a try expression
+
+
+void TryOperator(): {}
+{
+    <TRY>
+    | <TRY> <QUESTION_MARK>
+    | <TRY> <EXCLAMATION_MARK>
+}
 
 /* ===================================================================
                         3.3. GRAMMAR OF A BINARY EXPRESSION
@@ -1218,7 +1225,6 @@ void WildcardExpression(): {}
 
 void SelectorExpression(): {}
 {
-    // TODO: Проверить можно ли так поступать с селектором
     <SELECTOR> <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
     | <SELECTOR> <OPEN_PARENTHESIS> <GETTER> <COLON> Expression() <CLOSED_PARENTHESIS>
     | <SELECTOR> <OPEN_PARENTHESIS> <SETTER> <COLON> Expression() <CLOSED_PARENTHESIS>
@@ -1755,7 +1761,7 @@ void SwiftVersionConfiguration(): {}
    =================================================================== */
 void LineControlStatement(): {}
 {
-    <SOURCE_LOCATION> <OPEN_PARENTHESIS> <FILE> FileName() <COMMA> <LINE> LineNumber() <CLOSED_PARENTHESIS> //TODO decide on colon "file:"
+    <SOURCE_LOCATION> <OPEN_PARENTHESIS> <FILE> FileName() <COMMA> <LINE> LineNumber() <CLOSED_PARENTHESIS>
     | <SOURCE_LOCATION> <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
 }
 
