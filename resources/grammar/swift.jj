@@ -1,23 +1,33 @@
 options
 {
-     LOOKAHEAD=2;
+     LOOKAHEAD=3;
+     DEBUG_PARSER = true;
 }
 
 PARSER_BEGIN(JavaSwift)
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 public class JavaSwift
 {
-    public static void main(String args[]) throws ParseException
+    public static void main(String args[]) throws FileNotFoundException, ParseException
     {
-        JavaSwift parser = new JavaSwift(System.in);
-        while (true)
-        {
+        JavaSwift parser = new JavaSwift(new FileInputStream(args[0]));
+        //while (true)
+        //{
             parser.TopLevelDeclaration();
-        }
+        //}
     }
 }
 
 PARSER_END(JavaSwift)
+
+SKIP:
+{
+    " "
+  | "\t"
+}
 
 TOKEN:
 {
@@ -461,7 +471,7 @@ TOKEN:
 
 void Identifier(): {}
 {
-    IdentifierHead() (IdentifierCharacter())?
+    IdentifierHead() (IdentifierCharacter())*
     | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <OPEN_QUOTE>
     | ImplicitParameterName()
 }
