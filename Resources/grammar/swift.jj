@@ -1268,21 +1268,22 @@ void KeyPathExpression(): {}
 
 void PostfixExpression(): {}
 {
-    SimplePostfixExpression()
-    | SimplePostfixExpression() PostfixOperator() (PostfixExpression())?
+    (   PrimaryExpression()
+        | DynamicTypeExpression()
+    )
+    (SimplePostfixExpression())?
 }
 
 void SimplePostfixExpression(): {}
 {
-    PrimaryExpression()
-    | FunctionCallExpression()
-    | InitializerExpression()
-    | ExplicitMemberExpression()
-    | PostfixSelfExpression()
-    | DynamicTypeExpression()
-    | SubscriptExpression()
-    | ForcedValueExpression()
-    | OptionalChainingExpression()
+     (   FunctionCallExpression()
+        | InitializerExpression()
+        | ExplicitMemberExpression()
+        | PostfixSelfExpression()
+        | SubscriptExpression()
+        | ForcedValueExpression()
+        | OptionalChainingExpression()
+    ) (SimplePostfixExpression())?
 }
 
 /* ===================================================================
@@ -1739,13 +1740,19 @@ void EndifDirective(): {}
 
 void CompilationCondition(): {}
 {
-    PlatformCondition()
-    | Identifier()
-    | BooleanLiteral()
-    | <OPEN_PARENTHESIS> CompilationCondition() <CLOSED_PARENTHESIS>
-    | <EXCLAMATION_MARK> CompilationCondition()
-    | CompilationCondition() <DBL_AMPERSAND> CompilationCondition()
-    | CompilationCondition() <DBL_OR> CompilationCondition()
+    (   PlatformCondition()
+        | Identifier()
+        | BooleanLiteral()
+        | <OPEN_PARENTHESIS> CompilationCondition() <CLOSED_PARENTHESIS>
+        | <EXCLAMATION_MARK> CompilationCondition()
+    ) (SimpleCompilationCondition())?
+}
+
+void SimpleCompilationCondition(): {}
+{
+    (   <DBL_AMPERSAND> CompilationCondition()
+        | <DBL_OR> CompilationCondition()
+    ) (SimpleCompilationCondition())?
 }
 
 
