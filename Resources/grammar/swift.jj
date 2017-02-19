@@ -12,7 +12,7 @@ public class JavaSwift
         JavaSwift parser = new JavaSwift(System.in);
         while (true)
         {
-            parser.parseOneLine();
+            parser.TopLevelDeclaration();
         }
     }
 }
@@ -39,10 +39,11 @@ TOKEN:
     | < EXTENDED_UNICODE: (["U+50000"-"U+5FFFD"]) | (["U+60000"-"U+6FFFD"]) | (["U+70000"-"U+7FFFD"]) | (["U+80000"-"U+8FFFD"]) >
     | < EXTENDED_UNICODE: (["U+90000"-"U+9FFFD"]) | (["U+A0000"-"U+AFFFD"]) | (["U+B0000"-"U+BFFFD"]) | (["U+C0000"-"U+CFFFD"]) >
     | < EXTENDED_UNICODE: (["U+D0000"-"U+DFFFD "]) | (["U+E0000"-"U+EFFFD"]) >
-    | < EXTENDED_UNICODE: (["U+0300"-"U+036F "]) | (["U+1DC0"-"U+1DFF"]) | (["U+20D0"-"U+20FF"]) | (["U+FE20"-"U+FE2F"]) >
+
+    | < EXTENDED_UNICODE_2: (["U+0300"-"U+036F "]) | (["U+1DC0"-"U+1DFF"]) | (["U+20D0"-"U+20FF"]) | (["U+FE20"-"U+FE2F"]) >
 
     | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
-    | < ESCAPE_CHARACTERS: ("\\u") (<OPEN_BRACKET>) ("Between one and eight hexadecimal digits") (<CLOSED_BRACKET>) >
+    | < ESCAPE_CHARACTERS: ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
 
     /* ================================
                     Digits
@@ -453,19 +454,12 @@ TOKEN:
     | < EOL: "\n" >
 }
 
-
-
-
-
-
-
-
 /* =====================================================================================================================
                         1. Lexical Structure
    ================================================================================================================== */
 
 /* ===================================================================
-                        1.1. GRAMMAR OF AN IDENTIFIER
+                        1.1. GRAMMAR OF AN IDENTIFIER (CHECKED by Alexey)
    =================================================================== */
 
 void Identifier(): {}
@@ -477,17 +471,17 @@ void Identifier(): {}
 
 void IdentifierHead(): {}
 {
-    // TODO: Доделать и разобраться
-    <UPPER_LETTER> |
-    <LOWER_LETTER> |
-    <UNDERSCORE> |
-    <EXTENDED_UNICODE>
+    <UPPER_LETTER>
+    | <LOWER_LETTER>
+    | <UNDERSCORE>
+    | <EXTENDED_UNICODE>
 }
 
 void IdentifierCharacter(): {}
 {
     <DIGIT>
     | IdentifierHead()
+    | <EXTENDED_UNICODE_2>
 }
 
 void IdentifierCharacters(): {}
@@ -501,7 +495,7 @@ void ImplicitParameterName(): {}
 }
 
 /* ===================================================================
-                        1.2. GRAMMAR OF A LITERAL
+                        1.2. GRAMMAR OF A LITERAL (CHECKED by Alexey)
    =================================================================== */
 
 void Literal(): {}
@@ -530,7 +524,7 @@ void NilLiteral(): {}
 }
 
 /* ===================================================================
-                        1.3. GRAMMAR OF AN INTEGER LITERAL (DONE)
+                        1.3. GRAMMAR OF AN INTEGER LITERAL (CHECKED by Alexey)
    =================================================================== */
 
 void IntegerLiteral(): {}
@@ -607,7 +601,7 @@ void HexadecimalLiteralCharacters(): {}
 }
 
 /* ===================================================================
-                        1.4. GRAMMAR OF A FLOATING-POINT LITERAL (DONE)
+                        1.4. GRAMMAR OF A FLOATING-POINT LITERAL (CHECKED by Alexey)
    =================================================================== */
 
 void FloatingPointLiteral(): {}
@@ -639,7 +633,7 @@ void HexadecimalExponent(): {}
 }
 
 /* ===================================================================
-                        1.5. GRAMMAR OF A STRING LITERAL
+                        1.5. GRAMMAR OF A STRING LITERAL (PROBLEM)
    =================================================================== */
 
 void StringLiteral(): {}
@@ -661,6 +655,7 @@ void QuotedText(): {}
 void QuotedTextItem(): {}
 {
     <ESCAPE_CHARACTERS>
+    // |
     // TODO Any Unicode scalar value except "­, \­, U+000A, or U+000D
 }
 
@@ -683,24 +678,23 @@ void InterpolatedTextItem(): {}
 /* ===================================================================
                         1.6. GRAMMAR OF OPERATORS
    =================================================================== */
-// TODO: Доделать весь раздел
 
 void Operator(): {}
 {
-    // TODO: Доделать
-    <NIL>
+    OperatorHead() (OperatorCharacters())?
+    | <DOT> DotOperatorCharacters()
 }
 
 void OperatorHead(): {}
 {
-    // TODO: Доделать
-    <NIL>
+    <OPERATOR_HEAD>
 }
 
 void OperatorCharacter(): {}
 {
-    // TODO: Доделать
-    <NIL>
+    OperatorHead()
+    | <OPERATOR_CHARACTER>
+    | OperatorCharacter() (OperatorCharacters())?
 }
 
 void OperatorCharacters(): {}
@@ -708,6 +702,31 @@ void OperatorCharacters(): {}
     OperatorCharacter() (OperatorCharacters())?
 }
 
+void DotOperatorCharacter(): {}
+{
+    <DOT>
+    | (OperatorCharacter())?
+}
+
+void DotOperatorCharacters(): {}
+{
+    DotOperatorCharacter() (DotOperatorCharacters())?
+}
+
+void BinaryOperator(): {}
+{
+    Operator()
+}
+
+void PrefixOperator(): {}
+{
+    Operator()
+}
+
+void PostfixOperator(): {}
+{
+    Operator()
+}
 
 /* =====================================================================================================================
                         2. Lexical Structure
@@ -2606,6 +2625,9 @@ void BalancedToken(): {}
     <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSE_PARENTHESIS>
     | <OPEN_SQUARE_BRACKET> (BalancedTokens())? <CLOSE_SQUARE_BRACKET>
     | <OPEN_BRACKET> (BalancedTokens())? <CLOSED_BRACKET>
+    | Identifier()
+    | Literal()
+    | Operator()
     // TODO: Доделать
 
 }
