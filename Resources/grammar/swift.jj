@@ -25,25 +25,25 @@ TOKEN:
     < UPPER_LETTER: ["A"-"Z"] >
     | < LOWER_LETTER: ["a"-"z"] >
     | < UNDERSCORE: "_" >
-    | < EXTENDED_UNICODE: ("U+00A8") | ("U+00AA") | ("U+00AD") | ("U+00AF") | (["U+00B2"-"U+00B5"]) | (["U+00B7"-"U+00BA"]) >
-    | < EXTENDED_UNICODE: (["U+00BC"-"U+00BE"]) | (["U+00C0"-"U+00D6"]) | (["U+00D8"-"U+00F6"]) | (["U+00F8"-"U+00FF"]) >
-    | < EXTENDED_UNICODE: (["U+0100"-"U+02FF"]) | (["U+0370"-"U+167F"]) | (["U+1681"-"U+180D"]) | (["U+180F"-"U+1DBF"]) >
-    | < EXTENDED_UNICODE: (["U+1E00"-"U+1FFF"]) >
-    | < EXTENDED_UNICODE: (["U+200B"-"U+200D"]) | (["U+202A"-"U+202E"]) | (["U+203F"-"U+2040"]) | ("U+2054") | (["U+2060"-"U+206F"]) >
-    | < EXTENDED_UNICODE: (["U+2070"-"U+20CF"]) | (["U+2100"-"U+218F"]) | (["U+2460"-"U+24FF"]) | (["U+2776"-"U+2793"]) >
-    | < EXTENDED_UNICODE: (["U+2C00"-"U+2DFF "]) | (["U+2E80"-"U+2FFF"]) >
-    | < EXTENDED_UNICODE: (["U+3004"-"U+3007"]) | (["U+3021"-"U+302F"]) | (["U+3031"-"U+303F"]) | (["U+3040"-"U+D7FF"]) >
-    | < EXTENDED_UNICODE: (["U+F900"-"U+FD3D"]) | (["U+FD40"-"U+FDCF"]) | (["U+FDF0"-"U+FE1F"]) | (["U+FE30"-"U+FE44"]) >
-    | < EXTENDED_UNICODE: (["U+FE47"-"U+FFFD"]) >
-    | < EXTENDED_UNICODE: (["U+10000"-"U+1FFFD"]) | (["U+20000"-"U+2FFFD"]) | (["U+30000"-"U+3FFFD"]) | (["U+40000"-"U+4FFFD"]) >
-    | < EXTENDED_UNICODE: (["U+50000"-"U+5FFFD"]) | (["U+60000"-"U+6FFFD"]) | (["U+70000"-"U+7FFFD"]) | (["U+80000"-"U+8FFFD"]) >
-    | < EXTENDED_UNICODE: (["U+90000"-"U+9FFFD"]) | (["U+A0000"-"U+AFFFD"]) | (["U+B0000"-"U+BFFFD"]) | (["U+C0000"-"U+CFFFD"]) >
-    | < EXTENDED_UNICODE: (["U+D0000"-"U+DFFFD "]) | (["U+E0000"-"U+EFFFD"]) >
+    | < EXTENDED_UNICODE: ("\u00A8") | ("\u00AA") | ("\u00AD") | ("\u00AF") | (["\u00B2"-"\u00B5"]) | (["\u00B7"-"\u00BA"])
+    | (["\u00BC"-"\u00BE"]) | (["\u00C0"-"\u00D6"]) | (["\u00D8"-"\u00F6"]) | (["\u00F8"-"\u00FF"])
+    | (["\u0100"-"\u02FF"]) | (["\u0370"-"\u167F"]) | (["\u1681"-"\u180D"]) | (["\u180F"-"\u1DBF"])
+    | (["\u1E00"-"\u1FFF"])
+    | (["\u200B"-"\u200D"]) | (["\u202A"-"\u202E"]) | (["\u203F"-"\u2040"]) | ("\u2054") | (["\u2060"-"\u206F"])
+    | (["\u2070"-"\u20CF"]) | (["\u2100"-"\u218F"]) | (["\u2460"-"\u24FF"]) | (["\u2776"-"\u2793"])
+    | (["\u2C00"-"\u2DFF"]) | (["\u2E80"-"\u2FFF"])
+    | (["\u3004"-"\u3007"]) | (["\u3021"-"\u302F"]) | (["\u3031"-"\u303F"]) | (["\u3040"-"\uD7FF"])
+    | (["\uF900"-"\uFD3D"]) | (["\uFD40"-"\uFDCF"]) | (["\uFDF0"-"\uFE1F"]) | (["\uFE30"-"\uFE44"])
+    | (["\uFE47"-"\uFFFD"]) >
+    // | < EXTENDED_UNICODE: (["\u10000"-"\u1FFFD"]) | (["\u20000"-"\u2FFFD"]) | (["\u30000"-"\u3FFFD"]) | (["\u40000"-"\u4FFFD"]) >
+    // | < EXTENDED_UNICODE: (["\u50000"-"\u5FFFD"]) | (["\u60000"-"\u6FFFD"]) | (["\u70000"-"\u7FFFD"]) | (["\u80000"-"\u8FFFD"]) >
+    // | < EXTENDED_UNICODE: (["\u90000"-"\u9FFFD"]) | (["\uA0000"-"\uAFFFD"]) | (["\uB0000"-"\uBFFFD"]) | (["\uC0000"-"\uCFFFD"]) >
+    // | < EXTENDED_UNICODE: (["\uD0000"-"\uDFFFD "]) | (["\uE0000"-"\uEFFFD"]) >
 
-    | < EXTENDED_UNICODE_2: (["U+0300"-"U+036F "]) | (["U+1DC0"-"U+1DFF"]) | (["U+20D0"-"U+20FF"]) | (["U+FE20"-"U+FE2F"]) >
+    | < EXTENDED_UNICODE_2: (["\u0300"-"\u036F"]) | (["\u1DC0"-"\u1DFF"]) | (["\u20D0"-"\u20FF"]) | (["\uFE20"-"\uFE2F"]) >
 
-    | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'") >
-    | < ESCAPE_CHARACTERS: ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
+    | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'")
+    | ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
 
     /* ================================
                     Digits
@@ -98,27 +98,27 @@ TOKEN:
     /* ================================
                     Operators
        ================================ */
-    | < OPERATOR_HEAD: (["U+00A1"-"U+00A7"]) >
-    | < OPERATOR_HEAD: ("U+00A9") | ("U+00AB") >
-    | < OPERATOR_HEAD: ("U+00AC ") | ("U+00AE") >
-    | < OPERATOR_HEAD: (["U+00B0"-"U+00B1"]) | ("U+00B6 ") | ("U+00BB") | ("U+00BF ") | ("U+00D7") | ("U+00F7") >
-    | < OPERATOR_HEAD: (["U+2016"-"U+2017 "]) | (["U+2020"-"U+2027 "]) >
-    | < OPERATOR_HEAD: (["U+2030"-"U+203E"]) >
-    | < OPERATOR_HEAD: (["U+2041"-"U+2053"]) >
-    | < OPERATOR_HEAD: (["U+2055"-"U+205E"]) >
-    | < OPERATOR_HEAD: (["U+2190"-"U+23FF"]) >
-    | < OPERATOR_HEAD: (["U+2500"-"U+2775"]) >
-    | < OPERATOR_HEAD: (["U+2794"-"U+2BFF"]) >
-    | < OPERATOR_HEAD: (["U+2E00"-"U+2E7F"]) >
-    | < OPERATOR_HEAD: (["U+3001"-"U+3003"]) >
-    | < OPERATOR_HEAD: (["U+3008"-"U+3030"]) >
+    | < OPERATOR_HEAD: (["\u00A1"-"\u00A7"])
+    | ("\u00A9") | ("\u00AB")
+    | ("\u00AC ") | ("\u00AE")
+    | (["\u00B0"-"\u00B1"]) | ("\u00B6 ") | ("\u00BB") | ("\u00BF ") | ("\u00D7") | ("\u00F7")
+    | (["\u2016"-"\u2017"]) | (["\u2020"-"\u2027"])
+    | (["\u2030"-"\u203E"])
+    | (["\u2041"-"\u2053"])
+    | (["\u2055"-"\u205E"])
+    | (["\u2190"-"\u23FF"])
+    | (["\u2500"-"\u2775"])
+    | (["\u2794"-"\u2BFF"])
+    | (["\u2E00"-"\u2E7F"])
+    | (["\u3001"-"\u3003"])
+    | (["\u3008"-"\u3030"]) >
 
-    | < OPERATOR_CHARACTER: (["U+0300"-"U+036F"]) >
-    | < OPERATOR_CHARACTER: (["U+1DC0"-"U+1DFF"]) >
-    | < OPERATOR_CHARACTER: (["U+20D0"-"U+20FF"]) >
-    | < OPERATOR_CHARACTER: (["U+FE00"-"U+FE0F"]) >
-    | < OPERATOR_CHARACTER: (["U+FE20"-"U+FE2F"]) >
-    | < OPERATOR_CHARACTER: (["U+E0100"-"U+E01EF"]) >
+    | < OPERATOR_CHARACTER: (["\u0300"-"\u036F"])
+    | (["\u1DC0"-"\u1DFF"])
+    | (["\u20D0"-"\u20FF"])
+    | (["\uFE00"-"\uFE0F"])
+    | (["\uFE20"-"\uFE2F"]) >
+    //| < OPERATOR_CHARACTER: (["\uE0100"-"\uE01EF"]) >
 
 
     /* ================================
@@ -234,7 +234,7 @@ TOKEN:
     | < IF: "if" >
     | < ELSE: "else" >
     | < SWITCH: "switch" >
-    | < DEFAULT: "default" >
+    | < DEFAULT_1: "default" >
     | < WHERE: "where" >
 
 
@@ -377,7 +377,6 @@ TOKEN:
        ================================ */
     | < PREFIX: "prefix" >
     | < POSTFIX: "postfix" >
-    | < INFIX: "infix" >
     | < OPERATOR: "operator" >
 
 
@@ -441,11 +440,9 @@ TOKEN:
     | < OPEN_SQUARE_BRACKET: "[" >
     | < CLOSED_SQUARE_BRACKET: "]" >
     | < OPEN_DOUBLE_QUOTE: "\"" >
-    | < CLOSED_DOUBLE_QUOTE: "\"" >
     | < OPEN_PARENTHESIS: "(" >
     | < CLOSED_PARENTHESIS: ")" >
     | < OPEN_QUOTE: "`" >
-    | < CLOSED_QUOTE: "`" >
     | < OPEN_TRIANGULAR_BRACKET: "<" >
     | < CLOSED_TRIANGULAR_BRACKET: ">" >
 
@@ -465,8 +462,14 @@ TOKEN:
 void Identifier(): {}
 {
     IdentifierHead() (IdentifierCharacter())?
-    | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <CLOSED_QUOTE>
+    | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <OPEN_QUOTE>
     | ImplicitParameterName()
+}
+
+void IdentifierList(): {}
+{
+    Identifier()
+    | Identifier() <COMMA> IdentifierList()
 }
 
 void IdentifierHead(): {}
@@ -515,7 +518,7 @@ void NumericLiteral(): {}
 void BooleanLiteral(): {}
 {
     <TRUE>
-    | <FAlSE>
+    | <FALSE>
 }
 
 void NilLiteral(): {}
@@ -633,7 +636,7 @@ void HexadecimalExponent(): {}
 }
 
 /* ===================================================================
-                        1.5. GRAMMAR OF A STRING LITERAL (PROBLEM)
+                        1.5. GRAMMAR OF A STRING LITERAL (CHECKED by Alexey)
    =================================================================== */
 
 void StringLiteral(): {}
@@ -644,7 +647,7 @@ void StringLiteral(): {}
 
 void StaticStringLiteral(): {}
 {
-    <OPEN_DOUBLE_QUOTE> (QuotedText())? <CLOSED_DOUBLE_QUOTE>
+    <OPEN_DOUBLE_QUOTE> (QuotedText())? <OPEN_DOUBLE_QUOTE>
 }
 
 void QuotedText(): {}
@@ -652,16 +655,16 @@ void QuotedText(): {}
     QuotedTextItem() (QuotedText())?
 }
 
+
+// TODO: Any Unicode scalar value except
 void QuotedTextItem(): {}
 {
     <ESCAPE_CHARACTERS>
-    // |
-    // TODO Any Unicode scalar value except "­, \­, U+000A, or U+000D
 }
 
 void InterpolatedStringLiteral(): {}
 {
-    <OPEN_DOUBLE_QUOTE> (InterpolatedText())? <CLOSED_DOUBLE_QUOTE>
+    <OPEN_DOUBLE_QUOTE> (InterpolatedText())? <OPEN_DOUBLE_QUOTE>
 }
 
 void InterpolatedText(): {}
@@ -678,11 +681,12 @@ void InterpolatedTextItem(): {}
 /* ===================================================================
                         1.6. GRAMMAR OF OPERATORS
    =================================================================== */
+// TODO: Доделать весь раздел
 
 void Operator(): {}
 {
     OperatorHead() (OperatorCharacters())?
-    | <DOT> DotOperatorCharacters()
+    | <DOT> OperatorHead() DotOperatorCharacters()
 }
 
 void OperatorHead(): {}
@@ -694,7 +698,6 @@ void OperatorCharacter(): {}
 {
     OperatorHead()
     | <OPERATOR_CHARACTER>
-    | OperatorCharacter() (OperatorCharacters())?
 }
 
 void OperatorCharacters(): {}
@@ -705,7 +708,7 @@ void OperatorCharacters(): {}
 void DotOperatorCharacter(): {}
 {
     <DOT>
-    | (OperatorCharacter())?
+    | OperatorCharacter()
 }
 
 void DotOperatorCharacters(): {}
@@ -971,7 +974,7 @@ void BinaryExpression(): {}
     | TypeCastingOperator()
 }
 
-void BinaryExpression(): {}
+void BinaryExpressions(): {}
 {
     BinaryExpression() (BinaryExpressions())?
 }
@@ -1007,7 +1010,7 @@ void PrimaryExpression(): {}
     | LiteralExpression()
     | SelfExpression()
     | SuperclassExpression()
-    | ClojureExpression()
+    | ClosureExpression()
     | ParenthesizedExpression()
     | TupleExpression()
     | ImplicitMemberExpression()
@@ -1265,8 +1268,13 @@ void KeyPathExpression(): {}
 
 void PostfixExpression(): {}
 {
+    SimplePostfixExpression()
+    | SimplePostfixExpression() PostfixOperator() (PostfixExpression())?
+}
+
+void SimplePostfixExpression(): {}
+{
     PrimaryExpression()
-    | PostfixExpression() PostfixOperator()
     | FunctionCallExpression()
     | InitializerExpression()
     | ExplicitMemberExpression()
@@ -1546,7 +1554,7 @@ void CaseItemList(): {}
 
 void DefaultLabel(): {}
 {
-    <DEFAULT> <COLON>
+    <DEFAULT_1> <COLON>
 }
 
 void WhereClause(): {}
@@ -1566,9 +1574,9 @@ void WhereExpression(): {}
 void LabeledStatement(): {}
 {
     StatementLabel() LoopStatement()
-    | StatementLable() IfStatement()
-    | StatementLable() SwitchStatement()
-    | StatementLable() DoStatement()
+    | StatementLabel() IfStatement()
+    | StatementLabel() SwitchStatement()
+    | StatementLabel() DoStatement()
 }
 
 void StatementLabel(): {}
@@ -2607,7 +2615,7 @@ void AttributeName(): {}
 
 void AttributeArgumentClause(): {}
 {
-    <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSE_PARENTHESIS>
+    <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSED_PARENTHESIS>
 }
 
 void Attributes(): {}
@@ -2622,12 +2630,9 @@ void BalancedTokens(): {}
 
 void BalancedToken(): {}
 {
-    <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSE_PARENTHESIS>
-    | <OPEN_SQUARE_BRACKET> (BalancedTokens())? <CLOSE_SQUARE_BRACKET>
+    <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSED_PARENTHESIS>
+    | <OPEN_SQUARE_BRACKET> (BalancedTokens())? <CLOSED_SQUARE_BRACKET>
     | <OPEN_BRACKET> (BalancedTokens())? <CLOSED_BRACKET>
-    | Identifier()
-    | Literal()
-    | Operator()
     // TODO: Доделать
 
 }
