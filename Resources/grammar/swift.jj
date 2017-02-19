@@ -741,17 +741,23 @@ void PostfixOperator(): {}
 
 void Type(): {}
 {
-    ArrayType()
-    | DictionaryType()
-    | FunctionType()
-    | TypeIdentifier()
-    | TupleType()
-    | OptionalType()
-    | ImplicitlyUnwrappedOptionalType()
-    | ProtocolCompositionType()
-    | MetatypeType()
-    | <ANY>
-    | <SELF>
+    (   ArrayType()
+        | DictionaryType()
+        | FunctionType()
+        | TypeIdentifier()
+        | TupleType()
+        | ProtocolCompositionType()
+        | <ANY>
+        | <SELF>
+    ) (SimpleType())?
+}
+
+void SimpleType(): {}
+{
+    (   OptionalType()
+        | ImplicitlyUnwrappedOptionalType()
+        | MetatypeType()
+    ) (SimpleType())?
 }
 
 /* ===================================================================
@@ -861,7 +867,7 @@ void DictionaryType(): {}
 
 void OptionalType(): {}
 {
-    Type() <QUESTION_MARK>
+    <QUESTION_MARK>
 }
 
 /* ===================================================================
@@ -870,7 +876,7 @@ void OptionalType(): {}
 
 void ImplicitlyUnwrappedOptionalType(): {}
 {
-    Type() <EXCLAMATION_MARK>
+    <EXCLAMATION_MARK>
 }
 
 /* ===================================================================
@@ -898,8 +904,8 @@ void ProtocolIdentifier(): {}
 
 void MetatypeType(): {}
 {
-    Type() <DOT> <TYPE>
-    | Type() <DOT> <CAPITAL_PROTOCOL>
+    <DOT> <TYPE>
+    | <DOT> <CAPITAL_PROTOCOL>
 }
 
 /* ===================================================================
@@ -1292,8 +1298,8 @@ void SimplePostfixExpression(): {}
 
 void FunctionCallExpression(): {}
 {
-    PostfixExpression() FunctionCallArgumentClause()
-    | PostfixExpression() (FunctionCallArgumentClause())? TrailingClosure()
+    FunctionCallArgumentClause()
+    | (FunctionCallArgumentClause())? TrailingClosure()
 }
 
 void FunctionCallArgumentClause(): {}
@@ -1327,8 +1333,8 @@ void TrailingClosure(): {}
 
 void InitializerExpression(): {}
 {
-    PostfixExpression() <DOT> <INIT>
-    | PostfixExpression() <DOT> <INIT> <OPEN_PARENTHESIS> ArgumentNames() <CLOSED_PARENTHESIS>
+    <DOT> <INIT>
+    | <DOT> <INIT> <OPEN_PARENTHESIS> ArgumentNames() <CLOSED_PARENTHESIS>
 }
 
 /* ===================================================================
@@ -1337,9 +1343,9 @@ void InitializerExpression(): {}
 
 void ExplicitMemberExpression(): {}
 {
-    PostfixExpression() <DOT> DecimalDigits()
-    | PostfixExpression() <DOT> Identifier() (GenericArgumentClause())?
-    | PostfixExpression() <DOT> Identifier() <OPEN_PARENTHESIS> ArgumentNames() <CLOSED_PARENTHESIS>
+    <DOT> DecimalDigits()
+    | <DOT> Identifier() (GenericArgumentClause())?
+    | <DOT> Identifier() <OPEN_PARENTHESIS> ArgumentNames() <CLOSED_PARENTHESIS>
 }
 
 void ArgumentNames(): {}
@@ -1358,7 +1364,7 @@ void ArgumentName(): {}
 
 void PostfixSelfExpression(): {}
 {
-    PostfixExpression() <DOT> <SELF>
+    <DOT> <SELF>
 }
 
 /* ===================================================================
@@ -1376,7 +1382,7 @@ void DynamicTypeExpression(): {}
 
 void SubscriptExpression(): {}
 {
-     PostfixExpression() <OPEN_SQUARE_BRACKET> ExpressionList() <CLOSED_SQUARE_BRACKET>
+     <OPEN_SQUARE_BRACKET> ExpressionList() <CLOSED_SQUARE_BRACKET>
 }
 
 /* ===================================================================
@@ -1385,7 +1391,7 @@ void SubscriptExpression(): {}
 
 void ForcedValueExpression(): {}
 {
-    PostfixExpression() <EXCLAMATION_MARK>
+    <EXCLAMATION_MARK>
 }
 
 /* ===================================================================
@@ -1394,7 +1400,7 @@ void ForcedValueExpression(): {}
 
 void OptionalChainingExpression(): {}
 {
-    PostfixExpression() <QUESTION_MARK>
+    <QUESTION_MARK>
 }
 
 
@@ -2654,14 +2660,20 @@ void BalancedToken(): {}
 
 void Pattern(): {}
 {
-    WildcardPattern() (TypeAnnotation())?
-    | IdentifierPattern() (TypeAnnotation())?
-    | ValueBindingPattern()
-    | TuplePattern() (TypeAnnotation())?
-    | EnumCasePattern()
-    | OptionalPattern()
-    | TypeCastingPattern()
-    | ExpressionPattern()
+    (   WildcardPattern() (TypeAnnotation())?
+        | IdentifierPattern() (TypeAnnotation())?
+        | ValueBindingPattern()
+        | TuplePattern() (TypeAnnotation())?
+        | EnumCasePattern()
+        | OptionalPattern()
+        | IsPattern()
+        | ExpressionPattern()
+    ) (SimplePattern())?
+}
+
+void SimplePattern(): {}
+{
+    AsPattern() (SimplePattern())?
 }
 
 /* ===================================================================
@@ -2749,7 +2761,7 @@ void IsPattern(): {}
 
 void AsPattern(): {}
 {
-    Pattern() <AS> Type()
+    <AS> Type()
 }
 
 /* ===================================================================
