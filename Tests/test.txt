@@ -1,1 +1,3 @@
-func helloWorld() { var helloWorld }
+func helloWorld() {
+    var helloWorld = 0
+}

@@ -14,10 +14,7 @@ public class JavaSwift
     public static void main(String args[]) throws FileNotFoundException, ParseException
     {
         JavaSwift parser = new JavaSwift(new FileInputStream(args[0]));
-        //while (true)
-        //{
-            parser.TopLevelDeclaration();
-        //}
+        parser.TopLevelDeclaration();
     }
 }
 
@@ -27,6 +24,7 @@ SKIP:
 {
     " "
   | "\t"
+  | "\n"
 }
 
 TOKEN:
@@ -121,7 +119,10 @@ TOKEN:
     | (["\u2794"-"\u2BFF"])
     | (["\u2E00"-"\u2E7F"])
     | (["\u3001"-"\u3003"])
-    | (["\u3008"-"\u3030"]) >
+    | (["\u3008"-"\u3030"])
+    | <PLUS>
+    | <MINUS>
+    | <ASSIGN> >
 
     | < OPERATOR_CHARACTER: (["\u0300"-"\u036F"])
     | (["\u1DC0"-"\u1DFF"])
@@ -458,7 +459,6 @@ TOKEN:
 
 
 
-    | < EOL: "\n" >
 }
 
 /* =====================================================================================================================

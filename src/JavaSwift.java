@@ -6,10 +6,7 @@ public class JavaSwift implements JavaSwiftConstants {
     public static void main(String args[]) throws FileNotFoundException, ParseException
     {
         JavaSwift parser = new JavaSwift(new FileInputStream(args[0]));
-        //while (true)
-        //{
-            parser.TopLevelDeclaration();
-        //}
+        parser.TopLevelDeclaration();
     }
 
 /* =====================================================================================================================
@@ -11358,12 +11355,12 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_219() {
-    if (jj_scan_token(157)) return true;
+    if (jj_scan_token(158)) return true;
     return false;
   }
 
   static private boolean jj_3_218() {
-    if (jj_scan_token(158)) return true;
+    if (jj_scan_token(159)) return true;
     return false;
   }
 
@@ -12142,7 +12139,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_620() {
-    if (jj_scan_token(5)) return true;
+    if (jj_scan_token(6)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_617()) jj_scanpos = xsp;
@@ -12885,7 +12882,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_151() {
-    if (jj_scan_token(5)) return true;
+    if (jj_scan_token(6)) return true;
     return false;
   }
 
@@ -14388,7 +14385,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_85() {
-    if (jj_scan_token(158)) return true;
+    if (jj_scan_token(159)) return true;
     return false;
   }
 
@@ -14406,7 +14403,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_84() {
-    if (jj_scan_token(157)) return true;
+    if (jj_scan_token(158)) return true;
     return false;
   }
 
@@ -14768,7 +14765,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_69() {
-    if (jj_scan_token(42)) return true;
+    if (jj_scan_token(43)) return true;
     return false;
   }
 
@@ -14798,7 +14795,7 @@ public class JavaSwift implements JavaSwiftConstants {
 
   static private boolean jj_3_68() {
     if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(42)) return true;
+    if (jj_scan_token(43)) return true;
     if (jj_3R_31()) return true;
     return false;
   }
@@ -14821,7 +14818,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_67() {
-    if (jj_scan_token(42)) return true;
+    if (jj_scan_token(43)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_66()) jj_scanpos = xsp;
@@ -14873,7 +14870,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_65() {
-    if (jj_scan_token(8)) return true;
+    if (jj_scan_token(9)) return true;
     return false;
   }
 
@@ -14978,7 +14975,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3R_27() {
-    if (jj_scan_token(8)) return true;
+    if (jj_scan_token(9)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_61()) jj_scanpos = xsp;
@@ -15890,7 +15887,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_19() {
-    if (jj_scan_token(29)) return true;
+    if (jj_scan_token(30)) return true;
     return false;
   }
 
@@ -17073,7 +17070,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3R_149() {
-    if (jj_scan_token(91)) return true;
+    if (jj_scan_token(92)) return true;
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_308()) jj_scanpos = xsp;
@@ -17086,7 +17083,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3R_275() {
-    if (jj_scan_token(90)) return true;
+    if (jj_scan_token(91)) return true;
     if (jj_3R_151()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -17103,7 +17100,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3R_274() {
-    if (jj_scan_token(89)) return true;
+    if (jj_scan_token(90)) return true;
     if (jj_3R_151()) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -17123,7 +17120,7 @@ public class JavaSwift implements JavaSwiftConstants {
     if (jj_3_303()) jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_3_304()) jj_scanpos = xsp;
-    if (jj_scan_token(92)) return true;
+    if (jj_scan_token(93)) return true;
     return false;
   }
 
@@ -17246,7 +17243,7 @@ public class JavaSwift implements JavaSwiftConstants {
   }
 
   static private boolean jj_3_291() {
-    if (jj_scan_token(83)) return true;
+    if (jj_scan_token(84)) return true;
     return false;
   }
 
