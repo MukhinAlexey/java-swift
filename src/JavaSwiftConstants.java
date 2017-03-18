@@ -331,29 +331,31 @@ public interface JavaSwiftConstants {
   /** RegularExpression Id. */
   int DBL_AMPERSAND = 164;
   /** RegularExpression Id. */
-  int DBL_OR = 165;
+  int OR = 165;
   /** RegularExpression Id. */
-  int AT = 166;
+  int DBL_OR = 166;
   /** RegularExpression Id. */
-  int OPEN_BRACKET = 167;
+  int AT = 167;
   /** RegularExpression Id. */
-  int CLOSED_BRACKET = 168;
+  int OPEN_BRACKET = 168;
   /** RegularExpression Id. */
-  int OPEN_SQUARE_BRACKET = 169;
+  int CLOSED_BRACKET = 169;
   /** RegularExpression Id. */
-  int CLOSED_SQUARE_BRACKET = 170;
+  int OPEN_SQUARE_BRACKET = 170;
   /** RegularExpression Id. */
-  int OPEN_DOUBLE_QUOTE = 171;
+  int CLOSED_SQUARE_BRACKET = 171;
   /** RegularExpression Id. */
-  int OPEN_PARENTHESIS = 172;
+  int OPEN_DOUBLE_QUOTE = 172;
   /** RegularExpression Id. */
-  int CLOSED_PARENTHESIS = 173;
+  int OPEN_PARENTHESIS = 173;
   /** RegularExpression Id. */
-  int OPEN_QUOTE = 174;
+  int CLOSED_PARENTHESIS = 174;
   /** RegularExpression Id. */
-  int OPEN_TRIANGULAR_BRACKET = 175;
+  int OPEN_QUOTE = 175;
   /** RegularExpression Id. */
-  int CLOSED_TRIANGULAR_BRACKET = 176;
+  int OPEN_TRIANGULAR_BRACKET = 176;
+  /** RegularExpression Id. */
+  int CLOSED_TRIANGULAR_BRACKET = 177;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -525,6 +527,7 @@ public interface JavaSwiftConstants {
     "\"$\"",
     "\"&\"",
     "\"&&\"",
+    "\"|\"",
     "\"||\"",
     "\"@\"",
     "\"{\"",

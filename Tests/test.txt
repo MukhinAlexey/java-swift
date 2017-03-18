@@ -1,3 +1,12 @@
-func helloWorld() {
-    var helloWorld = 0
-}
+func configurateTableViewHeaderView() {
+        if self.myOrdersShortInfo.isShowingBanner {
+            var headerString = "У вас \(myOrdersShortInfo.newOrderscount) активных заявки"
+            self.tableView.tableHeaderView = ShortInfoHeaderView()
+            let header = self.tableView.tableHeaderView as! ShortInfoHeaderView
+            header.set(string: headerString)
+            self.tableView.tableHeaderView?.setNeedsLayout()
+            self.tableView.tableHeaderView?.layoutIfNeeded()
+        } else {
+            self.tableView.tableHeaderView = nil
+        }
+    }

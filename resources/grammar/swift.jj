@@ -1,6 +1,6 @@
 options
 {
-     LOOKAHEAD=3;
+     LOOKAHEAD=15;
      DEBUG_PARSER = true;
 }
 
@@ -122,7 +122,21 @@ TOKEN:
     | (["\u3008"-"\u3030"])
     | <PLUS>
     | <MINUS>
-    | <ASSIGN> >
+    | <ASSIGN>
+    | <SLASH>
+    | <EXCLAMATION_MARK>
+    | <STAR>
+    | <PERCENT>
+    | <OPEN_TRIANGULAR_BRACKET>
+    | <CLOSED_TRIANGULAR_BRACKET>
+    | <AMPERSAND>
+    | <OR>
+    | <AMPERSAND>
+    | ("^")
+    | ("~")
+    | <QUESTION_MARK> >
+
+
 
     | < OPERATOR_CHARACTER: (["\u0300"-"\u036F"])
     | (["\u1DC0"-"\u1DFF"])
@@ -439,6 +453,7 @@ TOKEN:
     | < DOLLAR: "$" >
     | < AMPERSAND: "&" >
     | < DBL_AMPERSAND: "&&" >
+    | < OR: "|" >
     | < DBL_OR: "||" >
     | < AT: "@" >
 
@@ -691,12 +706,11 @@ void InterpolatedTextItem(): {}
 /* ===================================================================
                         1.6. GRAMMAR OF OPERATORS
    =================================================================== */
-// TODO: Доделать весь раздел
 
 void Operator(): {}
 {
     OperatorHead() (OperatorCharacters())?
-    | <DOT> OperatorHead() DotOperatorCharacters()
+    | <DOT> DotOperatorCharacters()
 }
 
 void OperatorHead(): {}
@@ -742,13 +756,14 @@ void PostfixOperator(): {}
 }
 
 /* =====================================================================================================================
-                        2. Lexical Structure
+                        2. Types
    ================================================================================================================== */
 
 /* ===================================================================
                         2.1. GRAMMAR OF A TYPE
    =================================================================== */
 
+// TODO: Не понял, где type → ( type ), но я его добавил
 void Type(): {}
 {
     (   ArrayType()
@@ -759,6 +774,7 @@ void Type(): {}
         | ProtocolCompositionType()
         | <ANY>
         | <SELF>
+        | <OPEN_PARENTHESIS> Type() <CLOSED_PARENTHESIS>
     ) (SimpleType())?
 }
 
@@ -771,157 +787,178 @@ void SimpleType(): {}
 }
 
 /* ===================================================================
-                        2.2. GRAMMAR OF A TYPE ANNOTATION
+                        2.2. GRAMMAR OF A TYPE ANNOTATION (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void TypeAnnotation(): {}
 {
     <COLON> (Attributes())? (<INOUT>)? Type()
 }
 
 /* ===================================================================
-                        2.3. GRAMMAR OF A TYPE IDENTIFIER
+                        2.3. GRAMMAR OF A TYPE IDENTIFIER (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void TypeIdentifier(): {}
 {
     TypeName() (GenericArgumentClause())?
     | TypeName() (GenericArgumentClause())? <DOT> TypeIdentifier()
 }
 
-void TypeName(): {
-}
+// ПРОВЕРЕНО
+void TypeName(): {}
 {
     Identifier()
 }
 
 /* ===================================================================
-                        2.4. GRAMMAR OF A TUPLE TYPE
+                        2.4. GRAMMAR OF A TUPLE TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void TupleType(): {}
 {
     <OPEN_PARENTHESIS> (TupleTypeElementList())? <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void TupleTypeElementList(): {}
 {
-    TupleTypeElement() |
-    TupleTypeElement() <COMMA> TupleTypeElementList()
+    TupleTypeElement()
+    | TupleTypeElement() <COMMA> TupleTypeElementList()
 }
 
+// ПРОВЕРЕНО
 void TupleTypeElement(): {}
 {
     ElementName() TypeAnnotation()| Type()
 }
 
+// ПРОВЕРЕНО
 void ElementName(): {}
 {
     Identifier()
 }
 
 /* ===================================================================
-                        2.5. GRAMMAR OF A FUNCTION TYPE
+                        2.5. GRAMMAR OF A FUNCTION TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void FunctionType(): {}
 {
-    (Attributes())? FunctionTypeArgumentClause() (<THROWS>)? <ARROW_RIGHT> Type() |
-    (Attributes())? FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type()
+    (Attributes())? FunctionTypeArgumentClause() (<THROWS>)? <ARROW_RIGHT> Type()
+    | (Attributes())? FunctionTypeArgumentClause() <RETHROWS> <ARROW_RIGHT> Type()
 }
 
+// ПРОВЕРЕНО, исправлена ошибка
 void FunctionTypeArgumentClause(): {}
 {
     <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS> |
-    <OPEN_PARENTHESIS> FunctionTypeArgumentList() <CLOSED_PARENTHESIS> (<THREE_DOTS>)?
+    <OPEN_PARENTHESIS> FunctionTypeArgumentList() (<THREE_DOTS>)? <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void FunctionTypeArgumentList(): {}
 {
     FunctionTypeArgument() |
     FunctionTypeArgument() <COMMA> FunctionTypeArgumentList()
 }
 
+// ПРОВЕРЕНО
 void FunctionTypeArgument(): {}
 {
     (Attributes())? (<INOUT>)? Type() |
     ArgumentLabel() TypeAnnotation()
 }
 
+// ПРОВЕРЕНО
 void ArgumentLabel(): {}
 {
     Identifier()
 }
 
 /* ===================================================================
-                        2.6. GRAMMAR OF AN ARRAY TYPE
+                        2.6. GRAMMAR OF AN ARRAY TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void ArrayType(): {}
 {
     <OPEN_SQUARE_BRACKET> Type() <CLOSED_SQUARE_BRACKET>
 }
 
 /* ===================================================================
-                        2.7. GRAMMAR OF A DICTIONARY TYPE
+                        2.7. GRAMMAR OF A DICTIONARY TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void DictionaryType(): {}
 {
     <OPEN_SQUARE_BRACKET> Type() <COLON> Type() <CLOSED_SQUARE_BRACKET>
 }
 
 /* ===================================================================
-                        2.8. GRAMMAR OF AN OPTIONAL TYPE
+                        2.8. GRAMMAR OF AN OPTIONAL TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО, исправлена ошибка
 void OptionalType(): {}
 {
-    <QUESTION_MARK>
+    Type() <QUESTION_MARK>
 }
 
 /* ===================================================================
-                        2.9. GRAMMAR OF AN IMPLICITLY UNWRAPPED OPTIONAL TYPE
+                        2.9. GRAMMAR OF AN IMPLICITLY UNWRAPPED OPTIONAL TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО, исправлена ошибка
 void ImplicitlyUnwrappedOptionalType(): {}
 {
-    <EXCLAMATION_MARK>
+    Type() <EXCLAMATION_MARK>
 }
 
 /* ===================================================================
-                        2.10. GRAMMAR OF A PROTOCOL COMPOSITION TYPE
+                        2.10. GRAMMAR OF A PROTOCOL COMPOSITION TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void ProtocolCompositionType(): {}
 {
     ProtocolIdentifier() <AMPERSAND> ProtocolCompositionContinuation()
 }
 
+// ПРОВЕРЕНО, исправлена ошибка
 void ProtocolCompositionContinuation(): {}
 {
-    ProtocolIdentifier() ProtocolCompositionType()
+    ProtocolIdentifier()
+    | ProtocolCompositionType()
 }
 
+// ПРОВЕРЕНО
 void ProtocolIdentifier(): {}
 {
     TypeIdentifier()
 }
 
 /* ===================================================================
-                        2.11. GRAMMAR OF A METATYPE TYPE
+                        2.11. GRAMMAR OF A METATYPE TYPE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО, исправлена ошибка
 void MetatypeType(): {}
 {
-    <DOT> <TYPE>
-    | <DOT> <CAPITAL_PROTOCOL>
+    Type() <DOT> <TYPE>
+    | Type() <DOT> <CAPITAL_PROTOCOL>
 }
 
 /* ===================================================================
-                        2.12. GRAMMAR OF A TYPE INHERITANCE CLAUSE
+                        2.12. GRAMMAR OF A TYPE INHERITANCE CLAUSE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void TypeInheritanceClause(): {}
 {
     <COLON> <CLASS> <COMMA> TypeInheritanceList()
@@ -929,6 +966,7 @@ void TypeInheritanceClause(): {}
     | <COLON> TypeInheritanceList()
 }
 
+// ПРОВЕРЕНО
 void TypeInheritanceList(): {}
 {
     TypeIdentifier()
@@ -1420,8 +1458,10 @@ void OptionalChainingExpression(): {}
 
 
 /* ===================================================================
-                        4.1. GRAMMAR OF A STATEMENT
+                        4.1. GRAMMAR OF A STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void Statement(): {}
 {
     Expression() (<SEMICOLON>)?
@@ -1435,6 +1475,7 @@ void Statement(): {}
     | CompilerControlStatement() (<SEMICOLON>)?
 }
 
+// ПРОВЕРЕНО
 void Statements(): {}
 {
     Statement() (Statements())?
@@ -1442,8 +1483,10 @@ void Statements(): {}
 
 
 /* ===================================================================
-                        4.2. GRAMMAR OF A LOOP STATEMENT
+                        4.2. GRAMMAR OF A LOOP STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void LoopStatement(): {}
 {
     ForInStatement()
@@ -1453,8 +1496,10 @@ void LoopStatement(): {}
 
 
 /* ===================================================================
-                        4.3. GRAMMAR OF A FOR-IN STATEMENT
+                        4.3. GRAMMAR OF A FOR-IN STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ForInStatement(): {}
 {
     <FOR> (<CASE>)? Pattern() <IN> Expression() (WhereClause())? CodeBlock()
@@ -1462,19 +1507,23 @@ void ForInStatement(): {}
 
 
 /* ===================================================================
-                        4.4. GRAMMAR OF A WHILE STATEMENT
+                        4.4. GRAMMAR OF A WHILE STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void WhileStatement(): {}
 {
     <WHILE> ConditionList() CodeBlock()
 }
 
+// ПРОВЕРЕНО
 void ConditionList(): {}
 {
     Condition()
     | Condition() <COMMA> ConditionList()
 }
 
+// ПРОВЕРЕНО
 void Condition(): {}
 {
     Expression()
@@ -1483,11 +1532,13 @@ void Condition(): {}
     | OptionalBridgingCondition()
 }
 
+// ПРОВЕРЕНО
 void CaseCondition(): {}
 {
     <CASE> Pattern() Initializer()
 }
 
+// ПРОВЕРЕНО
 void OptionalBridgingCondition(): {}
 {
     <LET> Pattern() Initializer()
@@ -1496,8 +1547,10 @@ void OptionalBridgingCondition(): {}
 
 
 /* ===================================================================
-                        4.5. GRAMMAR OF A REPEAT-WHILE STATEMENT
+                        4.5. GRAMMAR OF A REPEAT-WHILE STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void RepeatWhileStatement(): {}
 {
     <REPEAT> CodeBlock() <WHILE> Expression()
@@ -1505,8 +1558,10 @@ void RepeatWhileStatement(): {}
 
 
 /* ===================================================================
-                        4.6. GRAMMAR OF A BRANCH STATEMENT
+                        4.6. GRAMMAR OF A BRANCH STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void BranchStatement(): {}
 {
     IfStatement()
@@ -1516,13 +1571,16 @@ void BranchStatement(): {}
 
 
 /* ===================================================================
-                        4.7. GRAMMAR OF AN IF STATEMENT
+                        4.7. GRAMMAR OF AN IF STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void IfStatement(): {}
 {
     <IF> ConditionList() CodeBlock() (ElseClause())?
 }
 
+// ПРОВЕРЕНО
 void ElseClause(): {}
 {
     <ELSE> CodeBlock()
@@ -1531,8 +1589,10 @@ void ElseClause(): {}
 
 
 /* ===================================================================
-                        4.8. GRAMMAR OF A GUARD STATEMENT
+                        4.8. GRAMMAR OF A GUARD STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void GuardStatement(): {}
 {
     <GUARD> ConditionList() <ELSE> CodeBlock()
@@ -1540,45 +1600,54 @@ void GuardStatement(): {}
 
 
 /* ===================================================================
-                        4.9. GRAMMAR OF A SWITCH STATEMENT
+                        4.9. GRAMMAR OF A SWITCH STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void SwitchStatement(): {}
 {
     <SWITCH> Expression() <OPEN_BRACKET> (SwitchCases())? <CLOSED_BRACKET>
 }
 
+// ПРОВЕРЕНО
 void SwitchCases(): {}
 {
     SwitchCase() (SwitchCases())?
 }
 
+// ПРОВЕРЕНО
 void SwitchCase(): {}
 {
     CaseLabel() Statements()
     | DefaultLabel() Statements()
 }
 
+// ПРОВЕРЕНО
 void CaseLabel(): {}
 {
     <CASE> CaseItemList() <COLON>
 }
 
+// ПРОВЕРЕНО
 void CaseItemList(): {}
 {
     Pattern() (WhereClause())?
     | Pattern() (WhereClause())? <COMMA> CaseItemList()
 }
 
+// ПРОВЕРЕНО
 void DefaultLabel(): {}
 {
     <DEFAULT_1> <COLON>
 }
 
+// ПРОВЕРЕНО
 void WhereClause(): {}
 {
     <WHERE> WhereExpression()
 }
 
+// ПРОВЕРЕНО
 void WhereExpression(): {}
 {
     Expression()
@@ -1586,8 +1655,10 @@ void WhereExpression(): {}
 
 
 /* ===================================================================
-                        4.10. GRAMMAR OF A LABELED STATEMENT
+                        4.10. GRAMMAR OF A LABELED STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void LabeledStatement(): {}
 {
     StatementLabel() LoopStatement()
@@ -1596,11 +1667,13 @@ void LabeledStatement(): {}
     | StatementLabel() DoStatement()
 }
 
+// ПРОВЕРЕНО
 void StatementLabel(): {}
 {
     LabelName() <COLON>
 }
 
+// ПРОВЕРЕНО
 void LabelName(): {}
 {
     Identifier()
@@ -1608,8 +1681,10 @@ void LabelName(): {}
 
 
 /* ===================================================================
-                        4.11. GRAMMAR OF A CONTROL TRANSFER STATEMENT
+                        4.11. GRAMMAR OF A CONTROL TRANSFER STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ControlTransferStatement(): {}
 {
     BreakStatement()
@@ -1621,8 +1696,10 @@ void ControlTransferStatement(): {}
 
 
 /* ===================================================================
-                        4.12. GRAMMAR OF A BREAK STATEMENT
+                        4.12. GRAMMAR OF A BREAK STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void BreakStatement(): {}
 {
     <BREAK> (LabelName())?
@@ -1630,8 +1707,10 @@ void BreakStatement(): {}
 
 
 /* ===================================================================
-                        4.13. GRAMMAR OF A CONTINUE STATEMENT
+                        4.13. GRAMMAR OF A CONTINUE STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ContinueStatement(): {}
 {
     <CONTINUE> (LabelName())?
@@ -1639,8 +1718,10 @@ void ContinueStatement(): {}
 
 
 /* ===================================================================
-                        4.14. GRAMMAR OF A FALLTHROUGH STATEMENT
+                        4.14. GRAMMAR OF A FALLTHROUGH STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void FallthroughStatement(): {}
 {
     <FALLTHROUGH>
@@ -1648,8 +1729,10 @@ void FallthroughStatement(): {}
 
 
 /* ===================================================================
-                        4.15. GRAMMAR OF A RETURN STATEMENT
+                        4.15. GRAMMAR OF A RETURN STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ReturnStatement(): {}
 {
     <RETURN> (Expression())?
@@ -1657,8 +1740,10 @@ void ReturnStatement(): {}
 
 
 /* ===================================================================
-                        4.16. GRAMMAR OF A THROW STATEMENT
+                        4.16. GRAMMAR OF A THROW STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ThrowStatement(): {}
 {
     <THROW> Expression()
@@ -1666,8 +1751,10 @@ void ThrowStatement(): {}
 
 
 /* ===================================================================
-                        4.17. GRAMMAR OF A DEFER STATEMENT
+                        4.17. GRAMMAR OF A DEFER STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void DeferStatement(): {}
 {
     <DEFER> CodeBlock()
@@ -1675,18 +1762,22 @@ void DeferStatement(): {}
 
 
 /* ===================================================================
-                        4.18. GRAMMAR OF A DO STATEMENT
+                        4.18. GRAMMAR OF A DO STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void DoStatement(): {}
 {
     <DO> CodeBlock() (CatchClauses())?
 }
 
+// ПРОВЕРЕНО
 void CatchClauses(): {}
 {
     CatchClause() (CatchClauses())?
 }
 
+// ПРОВЕРЕНО
 void CatchClause(): {}
 {
     <CATCH> (Pattern())? (WhereClause())? CodeBlock()
@@ -1694,8 +1785,10 @@ void CatchClause(): {}
 
 
 /* ===================================================================
-                        4.19. GRAMMAR OF A COMPILER CONTROL STATEMENT
+                        4.19. GRAMMAR OF A COMPILER CONTROL STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void CompilerControlStatement(): {}
 {
     ConditionalCompilationBlock()
@@ -1704,56 +1797,64 @@ void CompilerControlStatement(): {}
 
 
 /* ===================================================================
-                        4.20. GRAMMAR OF A CONDITIONAL COMPILATION BLOCK
+                        4.20. GRAMMAR OF A CONDITIONAL COMPILATION BLOCK (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void ConditionalCompilationBlock(): {}
 {
     IfDirectiveClause() (ElseifDirectiveClauses())? (ElseDirectiveClause())? EndifDirective()
 }
 
-
+// ПРОВЕРЕНО
 void IfDirectiveClause(): {}
 {
     IfDirective() CompilationCondition() (Statements())?
 }
 
+// ПРОВЕРЕНО
 void ElseifDirectiveClauses(): {}
 {
     ElseifDirectiveClause() (ElseifDirectiveClauses())?
 }
 
+// ПРОВЕРЕНО
 void ElseifDirectiveClause(): {}
 {
     ElseifDirective() CompilationCondition() (Statements())?
 }
 
+// ПРОВЕРЕНО
 void ElseDirectiveClause(): {}
 {
     ElseDirective() (Statements())?
 }
 
-
+// ПРОВЕРЕНО
 void IfDirective(): {}
 {
     <SHARP_IF>
 }
 
+// ПРОВЕРЕНО
 void ElseifDirective(): {}
 {
     <SHARP_ELSEIF>
 }
 
+// ПРОВЕРЕНО
 void ElseDirective(): {}
 {
     <SHARP_ELSE>
 }
 
+// ПРОВЕРЕНО
 void EndifDirective(): {}
 {
     <SHARP_ENDIF>
 }
 
-
+// ПРОВЕРЕНО
 void CompilationCondition(): {}
 {
     (   PlatformCondition()
@@ -1764,6 +1865,7 @@ void CompilationCondition(): {}
     ) (SimpleCompilationCondition())?
 }
 
+// TODO: Проверить еще раз
 void SimpleCompilationCondition(): {}
 {
     (   <DBL_AMPERSAND> CompilationCondition()
@@ -1771,7 +1873,7 @@ void SimpleCompilationCondition(): {}
     ) (SimpleCompilationCondition())?
 }
 
-
+// ПРОВЕРЕНО
 void PlatformCondition(): {}
 {
     <OS> <OPEN_PARENTHESIS> OperatingSystem() <CLOSED_PARENTHESIS>
@@ -1779,6 +1881,7 @@ void PlatformCondition(): {}
     | <SWIFT> <OPEN_PARENTHESIS> <MORE_OR_EQUALS> SwiftVersion() <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void OperatingSystem(): {}
 {
     <MAC_OS>
@@ -1787,6 +1890,7 @@ void OperatingSystem(): {}
     | <TV_OS>
 }
 
+// ПРОВЕРЕНО
 void Architecture(): {}
 {
     <I_386>
@@ -1795,11 +1899,13 @@ void Architecture(): {}
     | <ARM_64>
 }
 
+// ПРОВЕРЕНО
 void SwiftVersion(): {}
 {
     DecimalDigits() (SwiftVersionConfiguration())?
 }
 
+// ПРОВЕРЕНО
 void SwiftVersionConfiguration(): {}
 {
     <DOT> DecimalDigits() (SwiftVersionConfiguration())?
@@ -1807,19 +1913,23 @@ void SwiftVersionConfiguration(): {}
 
 
 /* ===================================================================
-                        4.21. GRAMMAR OF A LINE CONTROL STATEMENT
+                        4.21. GRAMMAR OF A LINE CONTROL STATEMENT (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void LineControlStatement(): {}
 {
     <SOURCE_LOCATION> <OPEN_PARENTHESIS> <FILE> FileName() <COMMA> <LINE> LineNumber() <CLOSED_PARENTHESIS>
     | <SOURCE_LOCATION> <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void LineNumber(): {}
 {
     DecimalDigits()
 }
 
+// ПРОВЕРЕНО
 void FileName(): {}
 {
     StaticStringLiteral()
@@ -1827,25 +1937,30 @@ void FileName(): {}
 
 
 /* ===================================================================
-                        4.22. GRAMMAR OF AN AVAILABILITY CONDITION
+                        4.22. GRAMMAR OF AN AVAILABILITY CONDITION (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void AvailabilityCondition(): {}
 {
     <SHARP_AVAILABLE> <OPEN_PARENTHESIS> AvailabilityArguments() <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void AvailabilityArguments(): {}
 {
     AvailabilityArgument()
     | AvailabilityArgument() <COMMA> AvailabilityArguments()
 }
 
+// ПРОВЕРЕНО
 void AvailabilityArgument(): {}
 {
     PlatformName() PlatformVersion()
     | <STAR>
 }
 
+// ПРОВЕРЕНО
 void PlatformName(): {}
 {
     <IOS>
@@ -1856,6 +1971,7 @@ void PlatformName(): {}
     | <TV_OS>
 }
 
+// ПРОВЕРЕНО
 void PlatformVersion(): {}
 {
     DecimalDigits()
@@ -2623,41 +2739,47 @@ void MutationModifier(): {}
 
 
 /* ===================================================================
-                        6.1. GRAMMAR OF AN ATTRIBUTE
+                        6.1. GRAMMAR OF AN ATTRIBUTE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void Attribute(): {}
 {
     <AT> AttributeName() (AttributeArgumentClause())?
 }
 
+// ПРОВЕРЕНО
 void AttributeName(): {}
 {
     Identifier()
 }
 
+// ПРОВЕРЕНО
 void AttributeArgumentClause(): {}
 {
     <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSED_PARENTHESIS>
 }
 
+// ПРОВЕРЕНО
 void Attributes(): {}
 {
     Attribute() (Attributes())?
 }
 
+// ПРОВЕРЕНО
 void BalancedTokens(): {}
 {
     BalancedToken() (BalancedTokens())?
 }
 
+// TODO: Доделать
 void BalancedToken(): {}
 {
     <OPEN_PARENTHESIS> (BalancedTokens())? <CLOSED_PARENTHESIS>
     | <OPEN_SQUARE_BRACKET> (BalancedTokens())? <CLOSED_SQUARE_BRACKET>
     | <OPEN_BRACKET> (BalancedTokens())? <CLOSED_BRACKET>
-    // TODO: Доделать
-
+    | Identifier()
+    | Operator()
 }
 
 /* =====================================================================================================================
@@ -2790,19 +2912,23 @@ void ExpressionPattern(): {}
 
 
 /* ===================================================================
-                        8.1. GRAMMAR OF A GENERIC PARAMETER CLAUSE
+                        8.1. GRAMMAR OF A GENERIC PARAMETER CLAUSE (ПРОВЕРЕНО)
    =================================================================== */
+
+// ПРОВЕРЕНО
 void GenericParameterClause(): {}
 {
     <OPEN_TRIANGULAR_BRACKET> GenericParameterList() <CLOSED_TRIANGULAR_BRACKET>
 }
 
+// ПРОВЕРЕНО
 void GenericParameterList(): {}
 {
     GenericParameter()
     | GenericParameter() <COMMA> GenericParameterList()
 }
 
+// ПРОВЕРЕНО
 void GenericParameter(): {}
 {
     TypeName()
@@ -2810,29 +2936,34 @@ void GenericParameter(): {}
     | TypeName() <COLON> ProtocolCompositionType()
 }
 
+// ПРОВЕРЕНО
 void GenericWhereClause(): {}
 {
     <WHERE> RequirementList()
 }
 
+// ПРОВЕРЕНО
 void RequirementList(): {}
 {
     Requirement()
     | Requirement() <COMMA> RequirementList()
 }
 
+// ПРОВЕРЕНО
 void Requirement(): {}
 {
     ConformanceRequirement()
     | SameTypeRequirement()
 }
 
+// ПРОВЕРЕНО
 void ConformanceRequirement(): {}
 {
     TypeIdentifier() <COLON> TypeIdentifier()
     | TypeIdentifier() <COLON> ProtocolCompositionType()
 }
 
+// ПРОВЕРЕНО
 void SameTypeRequirement(): {}
 {
     TypeIdentifier() <EQUALS> Type()
@@ -2840,20 +2971,23 @@ void SameTypeRequirement(): {}
 
 
 /* ===================================================================
-                        8.2. GRAMMAR OF A GENERIC ARGUMENT CLAUSE
+                        8.2. GRAMMAR OF A GENERIC ARGUMENT CLAUSE (ПРОВЕРЕНО)
    =================================================================== */
 
+// ПРОВЕРЕНО
 void GenericArgumentClause(): {}
 {
     <OPEN_TRIANGULAR_BRACKET> GenericArgumentList() <CLOSED_TRIANGULAR_BRACKET>
 }
 
+// ПРОВЕРЕНО
 void GenericArgumentList(): {}
 {
     GenericArgument()
     | GenericArgument() <COMMA> GenericArgumentList()
 }
 
+// ПРОВЕРЕНО
 void GenericArgument(): {}
 {
     Type()
