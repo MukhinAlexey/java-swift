@@ -113,10 +113,10 @@ TOKEN:
 
     | < OCTAL_DIGIT_BEGIN: "0o" >
     | < OCTAL_DIGIT: ["0"-"7"] >
-    | < DECIMAL_DIGIT: (<DIGIT>)>
+//    | < DECIMAL_DIGIT: (<DIGIT>)>
 
     | < HEXADECIMAL_DIGIT_BEGIN: "0x">
-    | < HEXADECIMAL_DIGIT: (<DECIMAL_DIGIT>) | (["a"-"f"]) | (["A"-"F"]) >
+    | < HEXADECIMAL_DIGIT: (["a"-"f"]) | (["A"-"F"]) >
 
 
     /* ================================
@@ -574,7 +574,7 @@ void IdentifierCharacters(): {}
 //Проверено
 void ImplicitParameterName(): {}
 {
-    <DOLLAR> <DECIMAL_DIGIT>
+    <DOLLAR> <DIGIT>
 }
 
 /* ===================================================================
@@ -664,19 +664,19 @@ void OctalLiteralCharacters(): {}
 //Проверено
 void DecimalLiteral(): {}
 {
-    <DECIMAL_DIGIT> (DecimalLiteralCharacter())?
+    <DIGIT> (DecimalLiteralCharacter())?
 }
 
 //Проверено
 void DecimalDigits(): {}
 {
-    <DECIMAL_DIGIT> (DecimalDigits())?
+    <DIGIT> (DecimalDigits())?
 }
 
 //Проверено
 void DecimalLiteralCharacter(): {}
 {
-    <DECIMAL_DIGIT>
+    <DIGIT>
     | <UNDERSCORE>
 }
 
@@ -689,13 +689,13 @@ void DecimalLiteralCharacters(): {}
 //Проверено
 void HexadecimalLiteral(): {}
 {
-    <HEXADECIMAL_DIGIT_BEGIN> <HEXADECIMAL_DIGIT> (HexadecimalLiteralCharacters())?
+    <HEXADECIMAL_DIGIT_BEGIN> (<HEXADECIMAL_DIGIT> | <DIGIT>) (HexadecimalLiteralCharacters())?
 }
 
 //Проверено
 void HexadecimalLiteralCharacter(): {}
 {
-    <HEXADECIMAL_DIGIT>
+    ( <HEXADECIMAL_DIGIT> | <DIGIT>)
     | <UNDERSCORE>
 }
 
@@ -731,7 +731,7 @@ void DecimalExponent(): {}
 //Проверено
 void HexadecimalFraction(): {}
 {
-    <DOT> <HEXADECIMAL_DIGIT> (HexadecimalLiteralCharacters())?
+    <DOT> (<HEXADECIMAL_DIGIT> | <DIGIT>) (HexadecimalLiteralCharacters())?
 }
 
 //Проверено
