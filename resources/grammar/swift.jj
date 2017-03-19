@@ -1,8 +1,10 @@
 options
 {
 
-     LOOKAHEAD=3;
+     LOOKAHEAD=2;
      DEBUG_PARSER = true;
+     STATIC=false;
+
 }
 
 PARSER_BEGIN(JavaSwift)
@@ -12,9 +14,9 @@ import java.io.FileNotFoundException;
 
 public class JavaSwift
 {
-    public static void main(String args[]) throws FileNotFoundException, ParseException
+    public static void parse(String path) throws FileNotFoundException, ParseException
     {
-        JavaSwift parser = new JavaSwift(new FileInputStream(args[0]));
+        JavaSwift parser = new JavaSwift(new FileInputStream(path));
         parser.TopLevelDeclaration();
     }
 }
@@ -310,33 +312,33 @@ TOKEN:
                     Fallthrough
        ================================ */
     | < FALLTHROUGH: "fallthrough" >
-    
-    
+
+
     /* ================================
                     Return
        ================================ */
     | < RETURN: "return" >
-    
-    
+
+
     /* ================================
                     Throw
        ================================ */
     | < THROW: "throw" >
-    
-    
+
+
     /* ================================
                     Defer
        ================================ */
     | < DEFER: "defer " >
-    
-    
+
+
     /* ================================
                     Do
        ================================ */
     | < DO: "do" >
     | < CATCH: "catch" >
-    
-    
+
+
     /* ================================
                     Conditional Compilation
        ================================ */
@@ -355,8 +357,8 @@ TOKEN:
     | < X_86_64: "x86_64" >
     | < ARM: "arm" >
     | < ARM_64: "arm64" >
-    
-    
+
+
     /* ================================
                     Line Control
        ================================ */

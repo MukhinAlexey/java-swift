@@ -1,3 +1,0 @@
-guard thread.canDelete else {
-    return
-}
