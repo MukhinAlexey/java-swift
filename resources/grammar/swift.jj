@@ -257,7 +257,7 @@ TOKEN:
     /* ================================
                     Closure
        ================================ */
-    | < IN: "in" >
+    | < IN: "in " | " in" | " in " >
     | < WEAK: "weak" >
     | < UNOWNED: "unowned" >
     | < SAFE: "safe" >
@@ -288,15 +288,15 @@ TOKEN:
     /* ================================
                     Dynamic Type
        ================================ */
-    | < LET: "let" >
-    | < VAR: "var" >
+    | < LET: " let " >
+    | < VAR: " var " >
 
 
     /* ================================
                     Loops
        ================================ */
     | < WHILE: "while" >
-    | < FOR: "for" >
+    | < FOR: " for " | "for " >
     | < CASE: "case" >
     | < REPEAT: "repeat" >
     | < BREAK: "break" >
@@ -340,7 +340,7 @@ TOKEN:
     /* ================================
                     Defer
        ================================ */
-    | < DEFER: "defer" >
+    | < DEFER: "defer " >
     
     
     /* ================================
@@ -1439,10 +1439,9 @@ void KeyPathExpression(): {}
 //ToDo проверить DynamicTypeExpression()
 void PostfixExpression(): {}
 {
-    (   PrimaryExpression()
-        | DynamicTypeExpression()
-    )
-    (SimplePostfixExpression())?
+    PrimaryExpression()
+    | DynamicTypeExpression()
+    | SimplePostfixExpression()
 }
 
 //ToDo проверить рекурсию
