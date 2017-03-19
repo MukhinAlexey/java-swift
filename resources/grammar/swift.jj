@@ -50,8 +50,12 @@ TOKEN:
 
     | < EXTENDED_UNICODE_2: (["\u0300"-"\u036F"]) | (["\u1DC0"-"\u1DFF"]) | (["\u20D0"-"\u20FF"]) | (["\uFE20"-"\uFE2F"]) >
 
+    //ToDo: почему на первой строке первый слэш не экранируется, а на второй у \u экранируется?
     | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'")
     | ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
+
+    | < SURROGATE_PAIR_CODE: (["\uD800"-"\uDFFF"]) >
+    | < UNICODE_SCALAR: (["\u0000"-"\uD7FF"]) >
 
     /* ================================
                     Digits
@@ -484,19 +488,22 @@ TOKEN:
                         1.1. GRAMMAR OF AN IDENTIFIER (CHECKED by Alexey)
    =================================================================== */
 
+//Проверено
 void Identifier(): {}
 {
-    IdentifierHead() (IdentifierCharacter())*
+    IdentifierHead() (IdentifierCharacters())?
     | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <OPEN_QUOTE>
     | ImplicitParameterName()
 }
 
+//Проверено
 void IdentifierList(): {}
 {
     Identifier()
     | Identifier() <COMMA> IdentifierList()
 }
 
+//Проверено
 void IdentifierHead(): {}
 {
     <UPPER_LETTER>
@@ -505,6 +512,7 @@ void IdentifierHead(): {}
     | <EXTENDED_UNICODE>
 }
 
+//Проверено
 void IdentifierCharacter(): {}
 {
     <DIGIT>
@@ -512,11 +520,13 @@ void IdentifierCharacter(): {}
     | <EXTENDED_UNICODE_2>
 }
 
+//Проверено
 void IdentifierCharacters(): {}
 {
     IdentifierCharacter() (IdentifierCharacters())?
 }
 
+//Проверено
 void ImplicitParameterName(): {}
 {
     <DOLLAR> <DECIMAL_DIGIT>
@@ -526,6 +536,7 @@ void ImplicitParameterName(): {}
                         1.2. GRAMMAR OF A LITERAL (CHECKED by Alexey)
    =================================================================== */
 
+//Проверено
 void Literal(): {}
 {
     NumericLiteral()
@@ -534,18 +545,21 @@ void Literal(): {}
     | NilLiteral()
 }
 
+//Проверено
 void NumericLiteral(): {}
 {
     (<MINUS>)? IntegerLiteral()
     | (<MINUS>)? FloatingPointLiteral()
 }
 
+//Проверено
 void BooleanLiteral(): {}
 {
     <TRUE>
     | <FALSE>
 }
 
+//Проверено
 void NilLiteral(): {}
 {
     <NIL>
@@ -555,6 +569,7 @@ void NilLiteral(): {}
                         1.3. GRAMMAR OF AN INTEGER LITERAL (CHECKED by Alexey)
    =================================================================== */
 
+//Проверено
 void IntegerLiteral(): {}
 {
     BinaryLiteral()
@@ -563,66 +578,84 @@ void IntegerLiteral(): {}
     | HexadecimalLiteral()
 }
 
+//Проверено
 void BinaryLiteral(): {}
 {
-    <BINARY_DIGIT_BEGIN> <BINARY_DIGIT> (BinaryLiteralCharacter())?
+    <BINARY_DIGIT_BEGIN> <BINARY_DIGIT> (BinaryLiteralCharacters())?
 }
 
 
+//Проверено
 void BinaryLiteralCharacter(): {}
 {
     <BINARY_DIGIT>
     | <UNDERSCORE>
 }
 
+//Проверено
+void BinaryLiteralCharacters(): {}
+{
+    BinaryLiteralCharacter() (BinaryLiteralCharacters())?
+}
+
+//Проверено
 void OctalLiteral(): {}
 {
     <OCTAL_DIGIT_BEGIN> <OCTAL_DIGIT> (OctalLiteralCharacters())?
 }
 
+//Проверено
 void OctalLiteralCharacter(): {}
 {
     <OCTAL_DIGIT>
     | <UNDERSCORE>
 }
 
+//Проверено
 void OctalLiteralCharacters(): {}
 {
     OctalLiteralCharacter() (OctalLiteralCharacters())?
 }
 
+//Проверено
 void DecimalLiteral(): {}
 {
     <DECIMAL_DIGIT> (DecimalLiteralCharacter())?
 }
 
+//Проверено
 void DecimalDigits(): {}
 {
     <DECIMAL_DIGIT> (DecimalDigits())?
 }
 
+//Проверено
 void DecimalLiteralCharacter(): {}
 {
     <DECIMAL_DIGIT>
     | <UNDERSCORE>
 }
 
+//Проверено
 void DecimalLiteralCharacters(): {}
 {
     DecimalLiteralCharacter() (DecimalLiteralCharacters())?
 }
 
+//Проверено
 void HexadecimalLiteral(): {}
 {
     <HEXADECIMAL_DIGIT_BEGIN> <HEXADECIMAL_DIGIT> (HexadecimalLiteralCharacters())?
 }
 
+//Проверено
 void HexadecimalLiteralCharacter(): {}
 {
     <HEXADECIMAL_DIGIT>
     | <UNDERSCORE>
 }
 
+//Проверено
 void HexadecimalLiteralCharacters(): {}
 {
     HexadecimalLiteralCharacter() (HexadecimalLiteralCharacters())?
@@ -632,71 +665,81 @@ void HexadecimalLiteralCharacters(): {}
                         1.4. GRAMMAR OF A FLOATING-POINT LITERAL (CHECKED by Alexey)
    =================================================================== */
 
+//Проверено
 void FloatingPointLiteral(): {}
 {
     DecimalLiteral() (DecimalFraction())? (DecimalExponent())?
+    | HexadecimalLiteral() (HexadecimalFraction())? HexadecimalExponent()
 }
 
+//Проверено
 void DecimalFraction(): {}
 {
     <DOT> DecimalLiteral()
 }
 
+//Проверено
 void DecimalExponent(): {}
 {
-    <E> (<PLUS>)? DecimalLiteral()
-    | <E> (<MINUS>)? DecimalLiteral()
+    <E> (<PLUS> | <MINUS>)? DecimalLiteral()
 }
 
+//Проверено
 void HexadecimalFraction(): {}
 {
-    <DOT> <HEXADECIMAL_DIGIT>
-    | <DOT> <HEXADECIMAL_DIGIT> HexadecimalLiteralCharacters()
+    <DOT> <HEXADECIMAL_DIGIT> (HexadecimalLiteralCharacters())?
 }
 
+//Проверено
 void HexadecimalExponent(): {}
 {
-    <P> (<PLUS>)? DecimalLiteral()
-    | <P> (<MINUS>)? DecimalLiteral()
+    <P> (<PLUS> | <MINUS>)? DecimalLiteral()
 }
 
 /* ===================================================================
                         1.5. GRAMMAR OF A STRING LITERAL (CHECKED by Alexey)
    =================================================================== */
 
+//Проверено
 void StringLiteral(): {}
 {
     StaticStringLiteral()
     | InterpolatedStringLiteral()
 }
 
+//Проверено
 void StaticStringLiteral(): {}
 {
     <OPEN_DOUBLE_QUOTE> (QuotedText())? <OPEN_DOUBLE_QUOTE>
 }
 
+//Проверено
 void QuotedText(): {}
 {
     QuotedTextItem() (QuotedText())?
 }
 
 
-// TODO: Any Unicode scalar value except
+// TODO: Any Unicode scalar value except ", \, u000A, u000D
 void QuotedTextItem(): {}
 {
-    <ESCAPE_CHARACTERS>
+    <UNICODE_SCALAR>
+    | <ESCAPE_CHARACTERS>
 }
 
+//Проверено
 void InterpolatedStringLiteral(): {}
 {
     <OPEN_DOUBLE_QUOTE> (InterpolatedText())? <OPEN_DOUBLE_QUOTE>
 }
 
+//Проверено
 void InterpolatedText(): {}
 {
     InterpolatedTextItem() (InterpolatedText())?
 }
 
+//Проверено
 void InterpolatedTextItem(): {}
 {
     <BACK_SLASH> <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
@@ -981,11 +1024,13 @@ void TypeInheritanceList(): {}
                         3.1. GRAMMAR OF AN EXPRESSION
    =================================================================== */
 
+//Проверено
 void Expression(): {}
 {
-    (<TRY>)? PrefixExpression() (BinaryExpressions())?
+    (TryOperator())? PrefixExpression() (BinaryExpressions())?
 }
 
+//Проверено
 void ExpressionList(): {}
 {
     Expression()
@@ -996,19 +1041,21 @@ void ExpressionList(): {}
                         3.2. GRAMMAR OF A PREFIX EXPRESSION
    =================================================================== */
 
+//Проверено
 void PrefixExpression(): {}
 {
     (PrefixOperator())? PostfixExpression()
     | InOutExpression()
 }
 
+//Проверено
 void InOutExpression(): {}
 {
     <AMPERSAND> Identifier()
 }
 
 
-
+//Проверено
 void TryOperator(): {}
 {
     <TRY>
@@ -1020,14 +1067,16 @@ void TryOperator(): {}
                         3.3. GRAMMAR OF A BINARY EXPRESSION
    =================================================================== */
 
+//Проверено
 void BinaryExpression(): {}
 {
     BinaryOperator() PrefixExpression()
-    | <ASSIGN> (<TRY>)? PrefixExpression()
-    | ConditionalOperator() (<TRY>)? PrefixExpression()
+    | <ASSIGN> (TryOperator())? PrefixExpression()
+    | ConditionalOperator() (TryOperator())? PrefixExpression()
     | TypeCastingOperator()
 }
 
+//Проверено
 void BinaryExpressions(): {}
 {
     BinaryExpression() (BinaryExpressions())?
@@ -1037,15 +1086,17 @@ void BinaryExpressions(): {}
                         3.4. GRAMMAR OF A CONDITIONAL OPERATOR
    =================================================================== */
 
+//Проверено
 void ConditionalOperator(): {}
 {
-    <QUESTION_MARK> (<TRY>)? Expression() <COLON>
+    <QUESTION_MARK> (TryOperator())? Expression() <COLON>
 }
 
 /* ===================================================================
                         3.5. GRAMMAR OF A TYPE-CASTING OPERATOR
    =================================================================== */
 
+//Проверено
 void TypeCastingOperator(): {}
 {
     <IS> Type()
@@ -1058,6 +1109,7 @@ void TypeCastingOperator(): {}
                         3.6. GRAMMAR OF A PRIMARY EXPRESSION
    =================================================================== */
 
+//Проверено
 void PrimaryExpression(): {}
 {
     Identifier() (GenericArgumentClause())?
@@ -1077,6 +1129,7 @@ void PrimaryExpression(): {}
                         3.7. GRAMMAR OF A LITERAL EXPRESSION
    =================================================================== */
 
+//Проверено
 void LiteralExpression(): {}
 {
     Literal()
@@ -1089,39 +1142,46 @@ void LiteralExpression(): {}
     | <FUNCTION>
 }
 
+//Проверено
 void ArrayLiteral(): {}
 {
     <OPEN_SQUARE_BRACKET> (ArrayLiteralItems())? <CLOSED_SQUARE_BRACKET>
 }
 
+//Проверено
 void ArrayLiteralItems(): {}
 {
     ArrayLiteralItem() (<COMMA>)?
     | ArrayLiteralItem() <COMMA> ArrayLiteralItems()
 }
 
+//Проверено
 void ArrayLiteralItem(): {}
 {
     Expression()
 }
 
+//Проверено
 void DictionaryLiteral(): {}
 {
     <OPEN_SQUARE_BRACKET> DictionaryLiteralItems() <CLOSED_SQUARE_BRACKET>
     | <OPEN_SQUARE_BRACKET> <COLON> <CLOSED_SQUARE_BRACKET>
 }
 
+//Проверено
 void DictionaryLiteralItems(): {}
 {
     DictionaryLiteralItem() (<COMMA>)?
     | DictionaryLiteralItem() <COMMA> DictionaryLiteralItems()
 }
 
+//Проверено
 void DictionaryLiteralItem(): {}
 {
     Expression() <COLON> Expression()
 }
 
+//Проверено
 void PlaygroundLiteral(): {}
 {
     <COLOR_LITERAL> <OPEN_PARENTHESIS> <RED> <COLON> Expression() <COMMA> <GREEN> <COLON> Expression() <COMMA> <BLUE> <COLON> Expression() <COMMA> <ALPHA> <COLON> Expression() <CLOSED_PARENTHESIS>
@@ -1133,6 +1193,7 @@ void PlaygroundLiteral(): {}
                         3.8. GRAMMAR OF A SELF EXPRESSION
    =================================================================== */
 
+//Проверено
 void SelfExpression(): {}
 {
     <SELF>
@@ -1141,16 +1202,19 @@ void SelfExpression(): {}
     | SelfInitializerExpression()
 }
 
+//Проверено
 void SelfMethodExpression(): {}
 {
     <SELF> <DOT> Identifier()
 }
 
+//Проверено
 void SelfSubscriptExpression(): {}
 {
     <SELF> <OPEN_SQUARE_BRACKET> ExpressionList() <CLOSED_SQUARE_BRACKET>
 }
 
+//Проверено
 void SelfInitializerExpression(): {}
 {
     <SELF> <DOT> <INIT>
@@ -1160,6 +1224,7 @@ void SelfInitializerExpression(): {}
                         3.9. GRAMMAR OF A SUPERCLASS EXPRESSION (DONE)
    =================================================================== */
 
+//Проверено
 void SuperclassExpression(): {}
 {
     SuperclassMethodExpression()
@@ -1167,16 +1232,19 @@ void SuperclassExpression(): {}
     | SuperclassInitializerExpression()
 }
 
+//Проверено
 void SuperclassMethodExpression(): {}
 {
     <SUPER> <DOT> Identifier()
 }
 
+//Проверено
 void SuperclassSubscriptExpression(): {}
 {
     <SUPER> <OPEN_SQUARE_BRACKET> ExpressionList() <CLOSED_SQUARE_BRACKET>
 }
 
+//Проверено
 void SuperclassInitializerExpression(): {}
 {
     <SUPER> <DOT> <INIT>
@@ -1186,17 +1254,20 @@ void SuperclassInitializerExpression(): {}
                         3.10. GRAMMAR OF A CLOSURE EXPRESSION
    =================================================================== */
 
+//Проверено
 void ClosureExpression(): {}
 {
     <OPEN_BRACKET> (ClosureSignature())? (Statements())? <CLOSED_BRACKET>
 }
 
+//Проверено
 void ClosureSignature(): {}
 {
     (CaptureList())? ClosureParameterClause() (<THROWS>)? (FunctionResult())? <IN>
     | CaptureList() <IN>
 }
 
+//Проверено
 void ClosureParameterClause(): {}
 {
     <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
@@ -1204,41 +1275,49 @@ void ClosureParameterClause(): {}
     | IdentifierList()
 }
 
+//Проверено
 void ClosureParameterList(): {}
 {
-    ClosureParameter() ClosureParameter() <COMMA> ClosureParameterList()
+    ClosureParameter()
+    | ClosureParameter() <COMMA> ClosureParameterList()
 }
 
+//Проверено
 void ClosureParameter(): {}
 {
     ClosureParameterName() (TypeAnnotation())?
     | ClosureParameterName() TypeAnnotation() <THREE_DOTS>
 }
 
+//Проверено
 void ClosureParameterName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void CaptureList(): {}
 {
     <OPEN_SQUARE_BRACKET> CaptureListItems() <CLOSED_SQUARE_BRACKET>
 }
 
+//Проверено
 void CaptureListItems(): {}
 {
     CaptureListItem()
     | CaptureListItem() <COMMA> CaptureListItems()
 }
 
+//Проверено
 void CaptureListItem(): {}
 {
     (CaptureSpecifier())? Expression()
 }
 
+//Проверено
 void CaptureSpecifier(): {}
 {
-    // TODO: Доделать
+    // TODO: проверить токены – unowned(safe) vs <UNOWNED> <OPEN_PARENTHESIS> <SAFE> <CLOSED_PARENTHESIS>
     <WEAK>
     | <UNOWNED>
     | <UNOWNED> <OPEN_PARENTHESIS> <SAFE> <CLOSED_PARENTHESIS>
@@ -1249,15 +1328,17 @@ void CaptureSpecifier(): {}
                         3.11. GRAMMAR OF A IMPLICIT MEMBER EXPRESSION
    =================================================================== */
 
+//Проверено
 void ImplicitMemberExpression(): {}
 {
-    <DOT> Expression()
+    <DOT> Identifier()
 }
 
 /* ===================================================================
                         3.12. GRAMMAR OF A PARENTHESIZED EXPRESSION
    =================================================================== */
 
+//Проверено
 void ParenthesizedExpression(): {}
 {
     <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
@@ -1267,6 +1348,7 @@ void ParenthesizedExpression(): {}
                         3.13. GRAMMAR OF A TUPLE EXPRESSION
    =================================================================== */
 
+//Проверено
 void TupleExpression(): {}
 {
     <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
@@ -1274,12 +1356,14 @@ void TupleExpression(): {}
 
 }
 
+//Проверено
 void TupleElementList(): {}
 {
     TupleElement()
     | TupleElement() <COMMA> TupleTypeElementList()
 }
 
+//Проверено
 void TupleElement(): {}
 {
     Expression()
@@ -1290,6 +1374,7 @@ void TupleElement(): {}
                         3.14. GRAMMAR OF A WILDCARD EXPRESSION
    =================================================================== */
 
+//Проверено
 void WildcardExpression(): {}
 {
     <UNDERSCORE>
@@ -1299,6 +1384,7 @@ void WildcardExpression(): {}
                         3.15. GRAMMAR OF A SELECTOR EXPRESSION
    =================================================================== */
 
+//ToDo проверить токены getter: vs <GETTER> <COLON>
 void SelectorExpression(): {}
 {
     <SELECTOR> <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
@@ -1311,6 +1397,7 @@ void SelectorExpression(): {}
                         3.16. GRAMMAR OF A KEY-PATH EXPRESSION
    =================================================================== */
 
+//Проверено
 void KeyPathExpression(): {}
 {
     <KEY_PATH> <OPEN_PARENTHESIS> Expression() <CLOSED_PARENTHESIS>
@@ -1320,6 +1407,8 @@ void KeyPathExpression(): {}
                         3.17. GRAMMAR OF A POSTFIX EXPRESSION (DONE)
    =================================================================== */
 
+//ToDo проверить postfix-expression → postfix-expression­postfix-operator
+//ToDo проверить DynamicTypeExpression()
 void PostfixExpression(): {}
 {
     (   PrimaryExpression()
@@ -1328,6 +1417,7 @@ void PostfixExpression(): {}
     (SimplePostfixExpression())?
 }
 
+//ToDo проверить рекурсию
 void SimplePostfixExpression(): {}
 {
      (   FunctionCallExpression()
@@ -1350,18 +1440,21 @@ void FunctionCallExpression(): {}
     | (FunctionCallArgumentClause())? TrailingClosure()
 }
 
+//Проверено
 void FunctionCallArgumentClause(): {}
 {
     <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
     | <OPEN_PARENTHESIS> FunctionCallArgumentList() <CLOSED_PARENTHESIS>
 }
 
+//Проверено
 void FunctionCallArgumentList(): {}
 {
     FunctionCallArgument()
     | FunctionCallArgument() <COMMA> FunctionCallArgumentList()
 }
 
+//Проверено
 void FunctionCallArgument(): {}
 {
     Expression()
@@ -1370,6 +1463,7 @@ void FunctionCallArgument(): {}
     | Identifier() <COLON> Operator()
 }
 
+//Проверено
 void TrailingClosure(): {}
 {
     ClosureExpression()
@@ -1378,7 +1472,8 @@ void TrailingClosure(): {}
 /* ===================================================================
                         3.19. GRAMMAR OF AN INITIALIZER EXPRESSION
    =================================================================== */
-
+/*ToDo правило: postfix-expression . init
+Проверить разрешение рекурсии, потому что сейчас просто .init пройдёт */
 void InitializerExpression(): {}
 {
     <DOT> <INIT>
@@ -1389,6 +1484,8 @@ void InitializerExpression(): {}
                         3.20. GRAMMAR OF AN EXPLICIT MEMBER EXPRESSION
    =================================================================== */
 
+/*ToDo правило: postfix-expression . decimal-digits
+Проверить разрешение рекурсии, потому что сейчас просто .decimal-digits пройдёт */
 void ExplicitMemberExpression(): {}
 {
     <DOT> DecimalDigits()
@@ -1396,11 +1493,13 @@ void ExplicitMemberExpression(): {}
     | <DOT> Identifier() <OPEN_PARENTHESIS> ArgumentNames() <CLOSED_PARENTHESIS>
 }
 
+//Проверено
 void ArgumentNames(): {}
 {
     ArgumentName() (ArgumentNames())?
 }
 
+//Проверено
 void ArgumentName(): {}
 {
     Identifier() <COLON>
@@ -1410,6 +1509,8 @@ void ArgumentName(): {}
                         3.21. GRAMMAR OF A SELF EXPRESSION (DONE)
    =================================================================== */
 
+/*ToDo правило: postfix-expression . self
+Проверить разрешение рекурсии, потому что сейчас просто .self */
 void PostfixSelfExpression(): {}
 {
     <DOT> <SELF>
@@ -1419,6 +1520,7 @@ void PostfixSelfExpression(): {}
                         3.22. GRAMMAR OF A DYNAMIC TYPE EXPRESSION (DONE)
    =================================================================== */
 
+//ToDo что это?
 void DynamicTypeExpression(): {}
 {
     <TYPE> <OPEN_PARENTHESIS> <OF> <COLON> Expression() <CLOSED_PARENTHESIS>
@@ -1428,6 +1530,8 @@ void DynamicTypeExpression(): {}
                         3.23. GRAMMAR OF A SUBSCRIPT EXPRESSION
    =================================================================== */
 
+/*ToDo правило: postfix-expression [ expression-list ]
+Проверить разрешение рекурсии, потому что сейчас просто [expression-list] пройдёт */
 void SubscriptExpression(): {}
 {
      <OPEN_SQUARE_BRACKET> ExpressionList() <CLOSED_SQUARE_BRACKET>
@@ -1437,6 +1541,8 @@ void SubscriptExpression(): {}
                         3.24. GRAMMAR OF A FORCED-VALUE EXPRESSION
    =================================================================== */
 
+/*ToDo правило: postfix-expression !
+Проверить разрешение рекурсии, потому что сейчас просто ! пройдёт */
 void ForcedValueExpression(): {}
 {
     <EXCLAMATION_MARK>
@@ -1446,6 +1552,8 @@ void ForcedValueExpression(): {}
                         3.25. GRAMMAR OF AN OPTIONAL-CHAINING EXPRESSION
    =================================================================== */
 
+/*ToDo правило: postfix-expression ?
+Проверить разрешение рекурсии, потому что сейчас просто ? пройдёт */
 void OptionalChainingExpression(): {}
 {
     <QUESTION_MARK>
@@ -1990,6 +2098,7 @@ void PlatformVersion(): {}
                         5.1. GRAMMAR OF A DECLARATION
    =================================================================== */
 
+//Проверено
 void Declaration(): {}
 {
     ImportDeclaration()
@@ -2009,6 +2118,7 @@ void Declaration(): {}
     | PrecedenceGroupDeclaration()
 }
 
+//Проверено
 void Declarations(): {}
 {
     Declaration() (Declarations())?
@@ -2018,6 +2128,7 @@ void Declarations(): {}
                         5.2. GRAMMAR OF A TOP-LEVEL DECLARATION
    =================================================================== */
 
+//Проверено
 void TopLevelDeclaration(): {}
 {
     (Statements())?
@@ -2027,6 +2138,7 @@ void TopLevelDeclaration(): {}
                         5.3. GRAMMAR OF A CODE BLOCK
    =================================================================== */
 
+//Проверено
 void CodeBlock(): {}
 {
     <OPEN_BRACKET> (Statements())? <CLOSED_BRACKET>
@@ -2035,12 +2147,14 @@ void CodeBlock(): {}
 /* ===================================================================
                         5.4. GRAMMAR OF AN IMPORT DECLARATION
    =================================================================== */
+
+//Проверено
 void ImportDeclaration(): {}
 {
     (Attributes())? <IMPORT> (ImportKind())? ImportPath()
 }
 
-
+//Проверено
 void ImportKind(): {}
 {
     <TYPE_ALIAS>
@@ -2052,12 +2166,14 @@ void ImportKind(): {}
     | <FUNC>
 }
 
+//Проверено
 void ImportPath(): {}
 {
     ImportPathIdentifier()
     | ImportPathIdentifier() <DOT> ImportPath()
 }
 
+//Проверено
 void ImportPathIdentifier(): {}
 {
     Identifier()
@@ -2068,23 +2184,27 @@ void ImportPathIdentifier(): {}
 /* ===================================================================
                         5.5. GRAMMAR OF A CONSTANT DECLARATION
    =================================================================== */
+
+//Проверено
 void ConstantDeclaration(): {}
 {
     (Attributes())? (DeclarationModifiers())? <LET> PatternInitializerList()
 }
 
-
+//Проверено
 void PatternInitializerList(): {}
 {
     PatternInitializer()
     | PatternInitializer() <COMMA> PatternInitializerList()
 }
 
+//Проверено
 void PatternInitializer(): {}
 {
     Pattern() (Initializer())?
 }
 
+//Проверено
 void Initializer(): {}
 {
     <ASSIGN> Expression()
@@ -2094,6 +2214,8 @@ void Initializer(): {}
 /* ===================================================================
                         5.6. GRAMMAR OF A VARIABLE DECLARATION
    =================================================================== */
+
+//Проверено
 void VariableDeclaration(): {}
 {
     VariableDeclarationHead() PatternInitializerList()
@@ -2105,17 +2227,20 @@ void VariableDeclaration(): {}
 }
 
 
+//Проверено
 void VariableDeclarationHead(): {}
 {
     (Attributes())? (DeclarationModifiers())? <VAR>
 }
 
+//Проверено
 void VariableName(): {}
 {
     Identifier()
 }
 
 
+//Проверено
 void GetterSetterBlock(): {}
 {
     CodeBlock()
@@ -2123,50 +2248,59 @@ void GetterSetterBlock(): {}
     | <OPEN_BRACKET> SetterClause() GetterClause() <CLOSED_BRACKET>
 }
 
+//Проверено
 void GetterClause(): {}
 {
     (Attributes())? (MutationModifier())? <GET> CodeBlock()
 }
 
+//Проверено
 void SetterClause(): {}
 {
    (Attributes())? (MutationModifier())? <SET> (SetterName())? CodeBlock()
 }
 
+//Проверено
 void SetterName(): {}
 {
     <OPEN_PARENTHESIS> Identifier() <CLOSED_PARENTHESIS>
 }
 
 
+//Проверено
 void GetterSetterKeywordBlock(): {}
 {
     <OPEN_BRACKET> GetterKeywordClause() (SetterKeywordClause())? <CLOSED_BRACKET>
     | <OPEN_BRACKET> SetterKeywordClause() GetterKeywordClause() <CLOSED_BRACKET>
 }
 
+//Проверено
 void GetterKeywordClause(): {}
 {
     (Attributes())? (MutationModifier())? <GET>
 }
 
+//Проверено
 void SetterKeywordClause(): {}
 {
    (Attributes())? (MutationModifier())? <SET>
 }
 
 
+//Проверено
 void WillSetDidSetBlock(): {}
 {
     <OPEN_BRACKET> WillSetClause() (DidSetClause())? <CLOSED_BRACKET>
     | <OPEN_BRACKET> DidSetClause() (WillSetClause())? <CLOSED_BRACKET>
 }
 
+//Проверено
 void WillSetClause(): {}
 {
     (Attributes())? <WILL_SET> (SetterName())? CodeBlock()
 }
 
+//Проверено
 void DidSetClause(): {}
 {
    (Attributes())? <DID_SET> (SetterName())? CodeBlock()
@@ -2177,16 +2311,20 @@ void DidSetClause(): {}
 /* ===================================================================
                         5.7. GRAMMAR OF A TYPE ALIAS DECLARATION
    =================================================================== */
+
+//Проверено
 void TypealiasDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? <TYPE_ALIAS> TypealiasName() (GenericParameterClause())? TypealiasAssignment()
 }
 
+//Проверено
 void TypealiasName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void TypealiasAssignment(): {}
 {
     <ASSIGN> Type()
@@ -2196,17 +2334,21 @@ void TypealiasAssignment(): {}
 /* ===================================================================
                         5.8. GRAMMAR OF A FUNCTION DECLARATION
    =================================================================== */
+
+//Проверено
 void FunctionDeclaration(): {}
 {
     FunctionHead() FunctionName() (GenericParameterClause())? FunctionSignature() (GenericWhereClause())? (FunctionBody())?
 }
 
 
+//Проверено
 void FunctionHead(): {}
 {
     (Attributes())? (DeclarationModifiers())? <FUNC>
 }
 
+//Проверено
 void FunctionName(): {}
 {
     Identifier()
@@ -2214,35 +2356,41 @@ void FunctionName(): {}
 }
 
 
+//Проверено
 void FunctionSignature(): {}
 {
     ParameterClause() (<THROWS>)? (FunctionResult())?
     | ParameterClause() <RETHROWS> (FunctionResult())?
 }
 
+//Проверено
 void FunctionResult(): {}
 {
     <ARROW_RIGHT> (Attributes())? Type()
 }
 
+//Проверено
 void FunctionBody(): {}
 {
     CodeBlock()
 }
 
 
+//Проверено
 void ParameterClause(): {}
 {
     <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
     | <OPEN_PARENTHESIS> ParameterList() <CLOSED_PARENTHESIS>
 }
 
+//Проверено
 void ParameterList(): {}
 {
     Parameter()
     | Parameter() <COMMA> ParameterList()
 }
 
+//Проверено
 void Parameter(): {}
 {
     (ExternalParameterName())? LocalParameterName() TypeAnnotation() (DefaultArgumentClause())?
@@ -2250,16 +2398,20 @@ void Parameter(): {}
     | (ExternalParameterName())? LocalParameterName() TypeAnnotation() <THREE_DOTS>
 }
 
+//Проверено
 void ExternalParameterName(): {}
 {
     Identifier()
 }
 
+
+//Проверено
 void LocalParameterName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void DefaultArgumentClause(): {}
 {
     <ASSIGN> Expression()
@@ -2269,6 +2421,8 @@ void DefaultArgumentClause(): {}
 /* ===================================================================
                         5.9. GRAMMAR OF AN ENUMERATION DECLARATION
    =================================================================== */
+
+//Проверено
 void EnumDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? UnionStyleEnum()
@@ -2276,16 +2430,19 @@ void EnumDeclaration(): {}
 }
 
 
+//Проверено
 void UnionStyleEnum(): {}
 {
     (<INDIRECT>)? <ENUM> EnumName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? <OPEN_BRACKET> (UnionStyleEnumMembers())? <CLOSED_BRACKET>
 }
 
+//Проверено
 void UnionStyleEnumMembers(): {}
 {
     UnionStyleEnumMember() (UnionStyleEnumMembers())?
 }
 
+//Проверено
 void UnionStyleEnumMember(): {}
 {
     Declaration()
@@ -2293,43 +2450,51 @@ void UnionStyleEnumMember(): {}
     | CompilerControlStatement()
 }
 
+//Проверено
 void UnionStyleEnumCaseClause(): {}
 {
     (Attributes())? (<INDIRECT>)? <CASE> UnionStyleEnumCaseList()
 }
 
+//Проверено
 void UnionStyleEnumCaseList(): {}
 {
     UnionStyleEnumCase()
     | UnionStyleEnumCase() <COMMA> UnionStyleEnumCaseList()
 }
 
+//Проверено
 void UnionStyleEnumCase(): {}
 {
     EnumCaseName() (TupleType())?
 }
 
+//Проверено
 void EnumName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void EnumCaseName(): {}
 {
     Identifier()
 }
 
 
+//Проверено
 void RawValueStyleEnum(): {}
 {
     <ENUM> EnumName() (GenericParameterClause())? TypeInheritanceClause() (GenericWhereClause())? <OPEN_BRACKET> RawValueStyleEnumMembers() <CLOSED_BRACKET>
 }
 
+//Проверено
 void RawValueStyleEnumMembers(): {}
 {
     RawValueStyleEnumMember() (RawValueStyleEnumMembers())?
 }
 
+//Проверено
 void RawValueStyleEnumMember(): {}
 {
     Declaration()
@@ -2337,27 +2502,32 @@ void RawValueStyleEnumMember(): {}
     | CompilerControlStatement()
 }
 
+//Проверено
 void RawValueStyleEnumCaseClause(): {}
 {
     (Attributes())? <CASE> RawValueStyleEnumCaseList()
 }
 
+//Проверено
 void RawValueStyleEnumCaseList(): {}
 {
     RawValueStyleEnumCase()
     | RawValueStyleEnumCase() <COMMA> RawValueStyleEnumCaseList()
 }
 
+//Проверено
 void RawValueStyleEnumCase(): {}
 {
     EnumCaseName() (RawValueAssignment())?
 }
 
+//Проверено
 void RawValueAssignment(): {}
 {
     <ASSIGN> RawValueLiteral()
 }
 
+//Проверено
 void RawValueLiteral(): {}
 {
     NumericLiteral()
@@ -2369,27 +2539,33 @@ void RawValueLiteral(): {}
 /* ===================================================================
                         5.10. GRAMMAR OF A STRUCTURE DECLARATION
    =================================================================== */
+
+//Проверено
 void StructDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? <STRUCT> StructName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? StructBody()
 }
 
+//Проверено
 void StructName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void StructBody(): {}
 {
     <OPEN_BRACKET> (StructMembers())? <CLOSED_BRACKET>
 }
 
 
+//Проверено
 void StructMembers(): {}
 {
     StructMember() (StructMembers())?
 }
 
+//Проверено
 void StructMember(): {}
 {
     Declaration()
@@ -2400,28 +2576,34 @@ void StructMember(): {}
 /* ===================================================================
                         5.11. GRAMMAR OF A CLASS DECLARATION
    =================================================================== */
+
+//Проверено
 void ClassDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? (<FINAL>)? <CLASS> ClassName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? ClassBody()
     | (Attributes())? <FINAL> (AccessLevelModifier())? <CLASS> ClassName() (GenericParameterClause())? (TypeInheritanceClause())? (GenericWhereClause())? ClassBody()
 }
 
+//Проверено
 void ClassName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void ClassBody(): {}
 {
     <OPEN_BRACKET> (ClassMembers())? <CLOSED_BRACKET>
 }
 
 
+//Проверено
 void ClassMembers(): {}
 {
     ClassMember() (ClassMembers())?
 }
 
+//Проверено
 void ClassMember(): {}
 {
     Declaration()
@@ -2432,27 +2614,33 @@ void ClassMember(): {}
 /* ===================================================================
                         5.12. GRAMMAR OF A PROTOCOL DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? <PROTOCOL> ProtocolName() (TypeInheritanceClause())? ProtocolBody()
 }
 
+//Проверено
 void ProtocolName(): {}
 {
     Identifier()
 }
 
+//Проверено
 void ProtocolBody(): {}
 {
     <OPEN_BRACKET> (ProtocolMembers())? <CLOSED_BRACKET>
 }
 
 
+//Проверено
 void ProtocolMembers(): {}
 {
     ProtocolMember() (ProtocolMembers())?
 }
 
+//Проверено
 void ProtocolMember(): {}
 {
     ProtocolMemberDeclaration()
@@ -2460,6 +2648,7 @@ void ProtocolMember(): {}
 }
 
 
+//Проверено
 void ProtocolMemberDeclaration(): {}
 {
     ProtocolPropertyDeclaration()
@@ -2474,6 +2663,8 @@ void ProtocolMemberDeclaration(): {}
 /* ===================================================================
                         5.13. GRAMMAR OF A PROTOCOL PROPERTY DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolPropertyDeclaration(): {}
 {
     VariableDeclarationHead() VariableName() TypeAnnotation() GetterSetterKeywordBlock()
@@ -2483,6 +2674,8 @@ void ProtocolPropertyDeclaration(): {}
 /* ===================================================================
                         5.14. GRAMMAR OF A PROTOCOL METHOD DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolMethodDeclaration(): {}
 {
     FunctionHead() FunctionName() (GenericParameterClause())? FunctionSignature() (GenericWhereClause())?
@@ -2492,6 +2685,8 @@ void ProtocolMethodDeclaration(): {}
 /* ===================================================================
                         5.15. GRAMMAR OF A PROTOCOL INITIALIZER DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolInitializerDeclaration(): {}
 {
     InitializerHead() (GenericParameterClause())? ParameterClause() (<THROWS>)? (GenericWhereClause())?
@@ -2502,6 +2697,8 @@ void ProtocolInitializerDeclaration(): {}
 /* ===================================================================
                         5.16. GRAMMAR OF A PROTOCOL SUBSCRIPT DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolSubscriptDeclaration(): {}
 {
     SubscriptHead() SubscriptResult() GetterSetterKeywordBlock()
@@ -2511,6 +2708,8 @@ void ProtocolSubscriptDeclaration(): {}
 /* ===================================================================
                         5.17. GRAMMAR OF A PROTOCOL ASSOCIATED DECLARATION
    =================================================================== */
+
+//Проверено
 void ProtocolAssociatedTypeDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? <ASSOCIATED_TYPE> TypealiasName() (TypeInheritanceClause())? (TypealiasAssignment())?
@@ -2520,12 +2719,15 @@ void ProtocolAssociatedTypeDeclaration(): {}
 /* ===================================================================
                         5.18. GRAMMAR OF AN INITIALIZER DECLARATION
    =================================================================== */
+
+//Проверено
 void InitializerDeclaration(): {}
 {
     InitializerHead() (GenericParameterClause())? ParameterClause() (<THROWS>)? (GenericWhereClause())? InitializerBody()
     | InitializerHead() (GenericParameterClause())? ParameterClause() <RETHROWS> (GenericWhereClause())? InitializerBody()
 }
 
+//Проверено
 void InitializerHead(): {}
 {
     (Attributes())? (DeclarationModifiers())? <INIT>
@@ -2533,6 +2735,7 @@ void InitializerHead(): {}
     | (Attributes())? (DeclarationModifiers())? <INIT> <EXCLAMATION_MARK>
 }
 
+//Проверено
 void InitializerBody(): {}
 {
     CodeBlock()
@@ -2542,6 +2745,8 @@ void InitializerBody(): {}
 /* ===================================================================
                         5.19. GRAMMAR OF A DEINITIALIZER DECLARATION
    =================================================================== */
+
+//Проверено
 void DeinitializerDeclaration(): {}
 {
     (Attributes())? <DEINIT> CodeBlock()
@@ -2551,23 +2756,28 @@ void DeinitializerDeclaration(): {}
 /* ===================================================================
                         5.20. GRAMMAR OF AN EXTENSION DECLARATION
    =================================================================== */
+
+//Проверено
 void ExtensionDeclaration(): {}
 {
     (Attributes())? (AccessLevelModifier())? <EXTENSION> TypeIdentifier() (TypeInheritanceClause())? ExtensionBody()
     | (Attributes())? (AccessLevelModifier())? <EXTENSION> TypeIdentifier() GenericWhereClause() ExtensionBody()
 }
 
+//Проверено
 void ExtensionBody(): {}
 {
     <OPEN_BRACKET> (ExtensionMembers())? <CLOSED_BRACKET>
 }
 
 
+//Проверено
 void ExtensionMembers(): {}
 {
     ExtensionMember() (ExtensionMembers())?
 }
 
+//Проверено
 void ExtensionMember(): {}
 {
     Declaration()
@@ -2579,6 +2789,8 @@ void ExtensionMember(): {}
 /* ===================================================================
                         5.21. GRAMMAR OF A SUBSCRIPT DECLARATION
    =================================================================== */
+
+//Проверено
 void SubscriptDeclaration(): {}
 {
     SubscriptHead() SubscriptResult() CodeBlock()
@@ -2586,11 +2798,13 @@ void SubscriptDeclaration(): {}
     | SubscriptHead() SubscriptResult() GetterSetterKeywordBlock()
 }
 
+//Проверено
 void SubscriptHead(): {}
 {
     (Attributes())? (DeclarationModifiers())? <SUBSCRIPT> ParameterClause()
 }
 
+//Проверено
 void SubscriptResult(): {}
 {
     <ARROW_RIGHT> (Attributes())? Type()
@@ -2600,6 +2814,8 @@ void SubscriptResult(): {}
 /* ===================================================================
                         5.22. GRAMMAR OF AN OPERATOR DECLARATION
    =================================================================== */
+
+//Проверено
 void OperatorDeclaration(): {}
 {
     PrefixOperatorDeclaration()
@@ -2608,22 +2824,26 @@ void OperatorDeclaration(): {}
 }
 
 
+//Проверено
 void PrefixOperatorDeclaration(): {}
 {
     <PREFIX> <OPERATOR> Operator()
 }
 
+//Проверено
 void PostfixOperatorDeclaration(): {}
 {
     <POSTFIX> <OPERATOR> Operator()
 }
 
+//Проверено
 void InfixOperatorDeclaration(): {}
 {
     <INFIX> <OPERATOR> Operator() (InfixOperatorGroup())?
 }
 
 
+//Проверено
 void InfixOperatorGroup(): {}
 {
     PrecedenceGroupName()
@@ -2633,17 +2853,21 @@ void InfixOperatorGroup(): {}
 /* ===================================================================
                         5.23. GRAMMAR OF A PRECEDENCE GROUP DECLARATION
    =================================================================== */
+
+//Проверено
 void PrecedenceGroupDeclaration(): {}
 {
     <PRECEDENCE_GROUP> PrecedenceGroupName() <OPEN_BRACKET> (PrecedenceGroupAttributes())? <CLOSED_BRACKET>
 }
 
 
+//Проверено
 void PrecedenceGroupAttributes(): {}
 {
     PrecedenceGroupAttribute() (PrecedenceGroupAttributes())?
 }
 
+//Проверено
 void PrecedenceGroupAttribute(): {}
 {
     PrecedenceGroupRelation()
@@ -2651,17 +2875,20 @@ void PrecedenceGroupAttribute(): {}
     | PrecedenceGroupAssociativity()
 }
 
+//Проверено
 void PrecedenceGroupRelation(): {}
 {
     <HIGHER_THAN> <COLON> PrecedenceGroupNames()
     | <LOWER_THAN> <COLON> PrecedenceGroupNames()
 }
 
+//Проверено
 void PrecedenceGroupAssignment(): {}
 {
     <ASSIGNMENT> <COLON> BooleanLiteral()
 }
 
+//Проверено
 void PrecedenceGroupAssociativity(): {}
 {
     <ASSOCIATIVITY> <COLON> <LEFT>
@@ -2670,12 +2897,14 @@ void PrecedenceGroupAssociativity(): {}
 }
 
 
+//Проверено
 void PrecedenceGroupNames(): {}
 {
     PrecedenceGroupName()
     | PrecedenceGroupName() <COMMA> PrecedenceGroupNames()
 }
 
+//Проверено
 void PrecedenceGroupName(): {}
 {
     Identifier()
@@ -2685,6 +2914,8 @@ void PrecedenceGroupName(): {}
 /* ===================================================================
                         5.24. GRAMMAR OF A DECLARATION MODIFIER
    =================================================================== */
+
+//Проверено
 void DeclarationModifier(): {}
 {
     <CLASS>
@@ -2699,6 +2930,7 @@ void DeclarationModifier(): {}
     | <PREFIX>
     | <REQUIRED>
     | <STATIC>
+    | <UNOWNED>
     | <UNOWNED> <OPEN_PARENTHESIS> <SAFE> <CLOSED_PARENTHESIS>
     | <UNOWNED> <OPEN_PARENTHESIS> <UNSAFE> <CLOSED_PARENTHESIS>
     | <WEAK>
@@ -2706,11 +2938,13 @@ void DeclarationModifier(): {}
     | MutationModifier()
 }
 
+//Проверено
 void DeclarationModifiers(): {}
 {
     DeclarationModifier() (DeclarationModifiers())?
 }
 
+//Проверено
 void AccessLevelModifier(): {}
 {
     <PRIVATE>
@@ -2725,6 +2959,7 @@ void AccessLevelModifier(): {}
     | <OPEN> <OPEN_PARENTHESIS> <SET> <CLOSED_PARENTHESIS>
 }
 
+//Проверено
 void MutationModifier(): {}
 {
     <MUTATING>
@@ -2790,6 +3025,7 @@ void BalancedToken(): {}
                         7.1. GRAMMAR OF A PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void Pattern(): {}
 {
     (   WildcardPattern() (TypeAnnotation())?
@@ -2803,6 +3039,7 @@ void Pattern(): {}
     ) (SimplePattern())?
 }
 
+//Проверено
 void SimplePattern(): {}
 {
     AsPattern() (SimplePattern())?
@@ -2812,6 +3049,7 @@ void SimplePattern(): {}
                         7.2. GRAMMAR OF A WILDCARD PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void WildcardPattern(): {}
 {
     <UNDERSCORE>
@@ -2821,6 +3059,7 @@ void WildcardPattern(): {}
                         7.3. GRAMMAR OF AN IDENTIFIER PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void IdentifierPattern(): {}
 {
     Identifier()
@@ -2830,6 +3069,7 @@ void IdentifierPattern(): {}
                         7.4. GRAMMAR OF A VALUE-BINDING PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void ValueBindingPattern(): {}
 {
     <VAR> Pattern()
@@ -2840,17 +3080,20 @@ void ValueBindingPattern(): {}
                         7.5 GRAMMAR OF A TUPLE PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void TuplePattern(): {}
 {
     <OPEN_PARENTHESIS> (TuplePatternElementList())? <CLOSED_PARENTHESIS>
 }
 
+//Проверено
 void TuplePatternElementList(): {}
 {
     TuplePatternElement()
     | TuplePatternElement() <COMMA> TupleTypeElementList()
 }
 
+//Проверено
 void TuplePatternElement(): {}
 {
     Pattern()
@@ -2861,6 +3104,7 @@ void TuplePatternElement(): {}
                         7.6. GRAMMAR OF AN ENUMERATION CASE PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void EnumCasePattern(): {}
 {
     (TypeIdentifier())? <DOT> EnumCaseName() (TuplePattern())?
@@ -2870,6 +3114,7 @@ void EnumCasePattern(): {}
                         7.7. GRAMMAR OF AN OPTIONAL PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void OptionalPattern(): {}
 {
     IdentifierPattern() <QUESTION_MARK>
@@ -2880,17 +3125,20 @@ void OptionalPattern(): {}
                         7.8. GRAMMAR OF A TYPE CASTING PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void TypeCastingPattern(): {}
 {
     IsPattern()
     | AsPattern()
 }
 
+//Проверено
 void IsPattern(): {}
 {
     <IS> Type()
 }
 
+//Проверено
 void AsPattern(): {}
 {
     <AS> Type()
@@ -2900,6 +3148,7 @@ void AsPattern(): {}
                         7.9. GRAMMAR OF AN EXPRESSION PATTERN (DONE)
    =================================================================== */
 
+//Проверено
 void ExpressionPattern(): {}
 {
     Expression()
