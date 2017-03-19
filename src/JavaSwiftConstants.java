@@ -9,15 +9,11 @@ public interface JavaSwiftConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int UPPER_LETTER = 4;
+  int UPPER_LETTER = 6;
   /** RegularExpression Id. */
-  int LOWER_LETTER = 5;
+  int LOWER_LETTER = 7;
   /** RegularExpression Id. */
-  int UNDERSCORE = 6;
-  /** RegularExpression Id. */
-  int EXTENDED_UNICODE = 7;
-  /** RegularExpression Id. */
-  int EXTENDED_UNICODE_2 = 8;
+  int UNDERSCORE = 8;
   /** RegularExpression Id. */
   int ESCAPE_CHARACTERS = 9;
   /** RegularExpression Id. */
@@ -368,11 +364,11 @@ public interface JavaSwiftConstants {
     "\" \"",
     "\"\\t\"",
     "\"\\n\"",
+    "\"\\r\"",
+    "<token of kind 5>",
     "<UPPER_LETTER>",
     "<LOWER_LETTER>",
     "\"_\"",
-    "<EXTENDED_UNICODE>",
-    "<EXTENDED_UNICODE_2>",
     "<ESCAPE_CHARACTERS>",
     "<SURROGATE_PAIR_CODE>",
     "<DIGIT>",
