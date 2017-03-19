@@ -1,7 +1,7 @@
 options
 {
 
-     LOOKAHEAD=2;
+     LOOKAHEAD=3;
      DEBUG_PARSER = true;
 }
 
@@ -97,10 +97,10 @@ TOKEN:
     */
 
     //ToDo: почему на первой строке первый слэш не экранируется, а на второй у \\u экранируется?
-    | < ESCAPE_CHARACTERS: ("\\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"") | ("\'")
-    | ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
+    | < ESCAPE_CHARACTERS: ("\\0") | ("\\\\") | ("\\t") | ("\\n") | ("\\r") | ("\\\"") | ("\\'")
+    | ("\\u") ("[") (["1"-"8"]) ("]") >
 
-    | < SURROGATE_PAIR_CODE: (["\uD800"-"\uDFFF"]) >
+//    | < SURROGATE_PAIR_CODE: (["\uD800"-"\uDFFF"]) >
     //| < UNICODE_SCALAR: (["\u0000"-"\uD7FF"]) >
 
     /* ================================
@@ -170,21 +170,8 @@ TOKEN:
     | (["\u2E00"-"\u2E7F"])
     | (["\u3001"-"\u3003"])
     | (["\u3008"-"\u3030"])
-    | <PLUS>
-    | <MINUS>
-    | <ASSIGN>
-    | <SLASH>
-    | <EXCLAMATION_MARK>
-    | <STAR>
-    | <PERCENT>
-    | <OPEN_TRIANGULAR_BRACKET>
-    | <CLOSED_TRIANGULAR_BRACKET>
-    | <AMPERSAND>
-    | <OR>
-    | <AMPERSAND>
     | ("^")
-    | ("~")
-    | <QUESTION_MARK> >
+    | ("~") >
 
 
 
@@ -495,7 +482,7 @@ TOKEN:
     | < THREE_DOTS: "...">
     | < COMMA: "," >
     | < SEMICOLON: ";" >
-    | < COLON: ":" >
+    | < COLON: ":" | " :" | " : ">
     | < QUESTION_MARK: "?" >
     | < EXCLAMATION_MARK: "!" >
     | < SLASH: "/" >
@@ -803,6 +790,19 @@ void Operator(): {}
 void OperatorHead(): {}
 {
     <OPERATOR_HEAD>
+    | <PLUS>
+    | <MINUS>
+    | <ASSIGN>
+    | <SLASH>
+    | <EXCLAMATION_MARK>
+    | <STAR>
+    | <PERCENT>
+    | <OPEN_TRIANGULAR_BRACKET>
+    | <CLOSED_TRIANGULAR_BRACKET>
+    | <AMPERSAND>
+    | <OR>
+    | <AMPERSAND>
+    | <QUESTION_MARK>
 }
 
 void OperatorCharacter(): {}
@@ -2404,16 +2404,14 @@ void ParameterClause(): {}
 //Проверено
 void ParameterList(): {}
 {
-    Parameter()
-    | Parameter() <COMMA> ParameterList()
+    Parameter() (<COMMA> ParameterList())?
 }
 
 //Проверено
 void Parameter(): {}
 {
-    (ExternalParameterName())? LocalParameterName() TypeAnnotation() (DefaultArgumentClause())?
-    | (ExternalParameterName())? LocalParameterName() TypeAnnotation()
-    | (ExternalParameterName())? LocalParameterName() TypeAnnotation() <THREE_DOTS>
+    LocalParameterName() TypeAnnotation() ((DefaultArgumentClause())? | (<THREE_DOTS>)?)
+    | ExternalParameterName() LocalParameterName() TypeAnnotation() ((DefaultArgumentClause())? | (<THREE_DOTS>)?)
 }
 
 //Проверено
