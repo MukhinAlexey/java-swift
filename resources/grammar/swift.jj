@@ -1,6 +1,6 @@
 options
 {
-     LOOKAHEAD=15;
+     LOOKAHEAD=2;
      DEBUG_PARSER = true;
 }
 
@@ -25,6 +25,8 @@ SKIP:
     " "
   | "\t"
   | "\n"
+  | "\r"
+  | <"//" (~["\n","\r"])* ("\n"|"\r")>
 }
 
 TOKEN:
@@ -50,8 +52,8 @@ TOKEN:
 
     | < EXTENDED_UNICODE_2: (["\u0300"-"\u036F"]) | (["\u1DC0"-"\u1DFF"]) | (["\u20D0"-"\u20FF"]) | (["\uFE20"-"\uFE2F"]) >
 
-    //ToDo: почему на первой строке первый слэш не экранируется, а на второй у \u экранируется?
-    | < ESCAPE_CHARACTERS: ("\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"")  | ("\'")
+    //ToDo: почему на первой строке первый слэш не экранируется, а на второй у u экранируется?
+    | < ESCAPE_CHARACTERS: ("\\0") | ("\\") | ("\t") | ("\n") | ("\r") | ("\"") | ("\'")
     | ("\\u") (<OPEN_BRACKET>) (["1"-"8"]) (<CLOSED_BRACKET>) >
 
     | < SURROGATE_PAIR_CODE: (["\uD800"-"\uDFFF"]) >
@@ -2359,8 +2361,7 @@ void FunctionName(): {}
 //Проверено
 void FunctionSignature(): {}
 {
-    ParameterClause() (<THROWS>)? (FunctionResult())?
-    | ParameterClause() <RETHROWS> (FunctionResult())?
+    ParameterClause() ((<THROWS>)? | <RETHROWS>) (FunctionResult())?
 }
 
 //Проверено
@@ -2379,8 +2380,7 @@ void FunctionBody(): {}
 //Проверено
 void ParameterClause(): {}
 {
-    <OPEN_PARENTHESIS> <CLOSED_PARENTHESIS>
-    | <OPEN_PARENTHESIS> ParameterList() <CLOSED_PARENTHESIS>
+    <OPEN_PARENTHESIS> (ParameterList())? <CLOSED_PARENTHESIS>
 }
 
 //Проверено
