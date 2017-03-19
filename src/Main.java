@@ -16,13 +16,24 @@ public class Main {
             FilenameFilter fileFilter = (dir, name) -> name.endsWith(".swift");
             File[] files = folder.listFiles(fileFilter);
 
-            FileWriter fw = new FileWriter("metrics.csv");
+            FileWriter fw = new FileWriter("results.csv");
+            fw.write("File name; " +
+                    "Total variables; Total constant; Total loops; " +
+                    "Total classes; Total conditions; Total functions\n"
+            );
 
             for (File file : files) {
-                fw.write(file.getName() + ',');
                 try {
                     JavaSwift.parse(args[0] + file.getName());
-                    System.out.println(Metrics.INSTANCE.classCount);
+                    fw.write(file.getName() + ';' +
+                            Metrics.INSTANCE.variablesCount + ";"
+                            + Metrics.INSTANCE.constantCount + ";"
+                            + Metrics.INSTANCE.loopsCount + ";"
+                            + Metrics.INSTANCE.classCount + ";"
+                            + Metrics.INSTANCE.conditionsCount + ";"
+                            + Metrics.INSTANCE.functionCount+ "\n"
+                    );
+                    System.out.println(Metrics.INSTANCE.loopsCount);
                     Metrics.INSTANCE.clear();
                 } catch (ParseException e) {
                     e.printStackTrace();

@@ -2615,7 +2615,7 @@ void FunctionCallExpression() throws ParseException {
         throw new ParseException();
       }
     } finally {
-      Metrics.INSTANCE.loopsCount += 1;
+      Metrics.INSTANCE.loopsCount++;
       trace_return("LoopStatement");
     }
   }
@@ -2676,6 +2676,7 @@ void FunctionCallExpression() throws ParseException {
         ;
       }
     } finally {
+      Metrics.INSTANCE.conditionsCount++;
       trace_return("ConditionList");
     }
   }
@@ -3861,7 +3862,7 @@ void FunctionCallExpression() throws ParseException {
       jj_consume_token(LET);
       PatternInitializerList();
     } finally {
-      Metrics.INSTANCE.constantCount += 1;
+      Metrics.INSTANCE.constantCount++;
       trace_return("ConstantDeclaration");
     }
   }
@@ -3954,7 +3955,7 @@ void FunctionCallExpression() throws ParseException {
         throw new ParseException();
       }
     } finally {
-      Metrics.INSTANCE.variablesCount += 1;
+      Metrics.INSTANCE.variablesCount++;
       trace_return("VariableDeclaration");
     }
   }
@@ -4296,7 +4297,7 @@ void FunctionCallExpression() throws ParseException {
         ;
       }
     } finally {
-      Metrics.INSTANCE.functionCount += 1;
+      Metrics.INSTANCE.functionCount++;
       trace_return("FunctionDeclaration");
     }
   }
@@ -4980,7 +4981,7 @@ void FunctionCallExpression() throws ParseException {
         throw new ParseException();
       }
     } finally {
-      Metrics.INSTANCE.classCount += 1;
+      Metrics.INSTANCE.classCount++;
       trace_return("ClassDeclaration");
     }
   }

@@ -7,6 +7,8 @@ public class Metrics {
     int variablesCount = 0;
     int constantCount = 0;
     int loopsCount = 0;
+    int conditionsCount = 0;
+
 
     void clear() {
         this.functionCount = 0;
@@ -14,5 +16,6 @@ public class Metrics {
         this.variablesCount = 0;
         this.constantCount = 0;
         this.loopsCount = 0;
+        this.conditionsCount = 0;
     }
 }
