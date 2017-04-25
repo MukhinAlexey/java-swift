@@ -209,7 +209,7 @@ TOKEN:
                     Metatype
        ================================ */
     | < CAPITAL_TYPE: "Type" >
-    | < CAPITAL_PROTOCOL: "Protocol">
+    | < CAPITAL_PROTOCOL: " Protocol" | "Protocol " | " Protocol ">
 
 
     /* ================================
@@ -864,7 +864,7 @@ void Type(): {}
         | <ANY>
         | <SELF>
         | <OPEN_PARENTHESIS> Type() <CLOSED_PARENTHESIS>
-    ) (SimpleType())?
+    ) (<EXCLAMATION_MARK> | <QUESTION_MARK>)? (SimpleType())?
 }
 
 void SimpleType(): {}
@@ -1149,8 +1149,8 @@ void TypeCastingOperator(): {}
 //Проверено
 void PrimaryExpression(): {}
 {
-    Identifier() (GenericArgumentClause())?
-    | LiteralExpression()
+    LiteralExpression()
+    | Identifier() (GenericArgumentClause())?
     | SelfExpression()
     | SuperclassExpression()
     | ClosureExpression()
