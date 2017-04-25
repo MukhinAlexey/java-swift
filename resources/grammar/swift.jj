@@ -1,7 +1,7 @@
 options
 {
 
-     LOOKAHEAD=2;
+     LOOKAHEAD=30;
      DEBUG_PARSER = true;
      STATIC=false;
 
@@ -146,7 +146,7 @@ TOKEN:
     | < COLUMN: "#column" >
     | < FUNCTION: "#function" >
     | < COLOR_LITERAL: "#colorLiteral" >
-    | < RED: "red" >
+    | < RED: " red" | "red " | " red ">
     | < GREEN: "green" >
     | < BLUE: "blue" >
     | < ALPHA: "alpha" >
@@ -388,8 +388,8 @@ TOKEN:
     /* ================================
                     Variable
        ================================ */
-    | < GET: "get" >
-    | < SET: "set" >
+    | < GET: "get " | " get" | " get " >
+    | < SET: "set " | " set" | " set ">
     | < WILL_SET: "willSet" >
     | < DID_SET: "didSet" >
 
@@ -526,7 +526,7 @@ TOKEN:
 //Проверено
 void Identifier(): {}
 {
-    IdentifierHead() (IdentifierCharacters())?
+    IdentifierHead() (IdentifierCharacters())? (<DOT> Identifier())*
     | <OPEN_QUOTE> IdentifierHead() (IdentifierCharacter())? <OPEN_QUOTE>
     | ImplicitParameterName()
 }
@@ -1451,12 +1451,18 @@ void SimplePostfixExpression(): {}
 {
      (    InitializerExpression()
         | FunctionCallExpression()
+//        | AssignmentExpression()
         | ExplicitMemberExpression()
         | PostfixSelfExpression()
         | SubscriptExpression()
         | ForcedValueExpression()
         | OptionalChainingExpression()
     ) (SimplePostfixExpression())?
+}
+
+void AssignmentExpression(): {}
+{
+    Identifier() <ASSIGN> Identifier()
 }
 
 /* ===================================================================
@@ -1489,6 +1495,7 @@ void FunctionCallArgument(): {}
     Identifier() <COLON> (Operator() | Identifier() | Expression())
     | Operator()
     | Expression()
+    | Identifier()
 }
 
 //Проверено
@@ -1600,10 +1607,10 @@ void OptionalChainingExpression(): {}
 // ПРОВЕРЕНО, переписано на строгую
 void Statement(): {}
 {
-    (Expression()
+    (BranchStatement()
+    | Expression()
     | Declaration()
     | LoopStatement()
-    | BranchStatement()
     | LabeledStatement()
     | ControlTransferStatement()
     | DeferStatement()
