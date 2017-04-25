@@ -1269,7 +1269,7 @@ void SuperclassExpression(): {}
 //Проверено
 void SuperclassMethodExpression(): {}
 {
-    <SUPER> <DOT> Identifier()
+    <SUPER> <DOT> (FunctionCallExpression() | Identifier())
 }
 
 //Проверено
@@ -1441,16 +1441,16 @@ void KeyPathExpression(): {}
 //ToDo проверить DynamicTypeExpression()
 void PostfixExpression(): {}
 {
-    PrimaryExpression()
+    SimplePostfixExpression()
+    | PrimaryExpression()
     | DynamicTypeExpression()
-    | SimplePostfixExpression()
 }
 
 //ToDo проверить рекурсию
 void SimplePostfixExpression(): {}
 {
-     (   FunctionCallExpression()
-        | InitializerExpression()
+     (    InitializerExpression()
+        | FunctionCallExpression()
         | ExplicitMemberExpression()
         | PostfixSelfExpression()
         | SubscriptExpression()
@@ -1465,7 +1465,7 @@ void SimplePostfixExpression(): {}
 
 void FunctionCallExpression(): {}
 {
-    FunctionCallArgumentClause()
+    Identifier() FunctionCallArgumentClause()
     | (FunctionCallArgumentClause())? TrailingClosure()
 }
 
@@ -1486,9 +1486,9 @@ void FunctionCallArgumentList(): {}
 //Проверено, исправлено на строгую
 void FunctionCallArgument(): {}
 {
-    Expression()
-    | Identifier() <COLON> (Expression() | Operator())
+    Identifier() <COLON> (Operator() | Identifier() | Expression())
     | Operator()
+    | Expression()
 }
 
 //Проверено
