@@ -1,5 +1,9 @@
 class A {
-    func a()
+    var s = ses
+
+    func a() {
+        try? expression
+    }
 }
 
 class B {

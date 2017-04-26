@@ -19,5 +19,7 @@ class A {
                 helloFifthLoop.sayHello()
             }
         }
+
+        while a > b { }
     }
 }
